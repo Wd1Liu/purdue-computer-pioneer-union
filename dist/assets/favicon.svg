@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc"><title id="title">PCPU</title><desc id="desc">Open Circuit mark in copper on charcoal.</desc><rect width="128" height="128" rx="26" fill="#172126"/><g transform="translate(8 8) scale(.875)"><g fill="none" stroke="#c8754f" stroke-width="12" stroke-linecap="square" stroke-linejoin="miter">
+  <path d="M72 24H40L24 40V88L40 104H88L104 88V64"/>
+  <path d="M48 48V72L56 80H72L80 72V48L104 24"/>
+ </g><circle cx="104" cy="24" r="8" fill="#c8754f"/></g></svg>

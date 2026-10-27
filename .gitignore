@@ -1,0 +1,41 @@
+# Dependencies and local caches (dist/ is the committed website)
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.cache/
+.pytest_cache/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Credentials and local hosting identity
+.env
+.env.*
+.openai/
+.aws/
+.ssh/
+.netrc
+.npmrc
+credentials.json
+secrets.json
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+
+# Private working material and transfer artifacts
+private/
+private-docs/
+private-notes/
+signatures/
+*[Oo]ffer*[Ll]etter*
+.library-transfer/
+source-input/
+*.zip

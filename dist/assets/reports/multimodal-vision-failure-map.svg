@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 860" role="img" aria-labelledby="title desc"><title id="title">A failure map, not a highlight reel</title><desc id="desc">Proposed stress tests separate what a good-looking overlay can hide.</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#187b76" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="860" rx="28" fill="#f6f4ed"/>
+<rect x="40" y="34" width="250" height="35" rx="18" fill="#187b76"/>
+<text x="58" y="58" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="1">PCPU PROPOSED TESTS</text>
+<text x="44" y="119" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" text-anchor="start" letter-spacing="0">A failure map, not a highlight reel</text>
+<text x="45" y="157" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Proposed stress tests separate what a good-looking overlay can hide.</text>
+<path d="M44 188H1156" stroke="#d2ddd6"/>
+<rect x="44" y="218" width="324" height="50" rx="12" fill="#17313c"/>
+<text x="62" y="250" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="0">SCENE TO INCLUDE</text>
+<rect x="387" y="218" width="346" height="50" rx="12" fill="#17313c"/>
+<text x="405" y="250" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="0">FAILURE TO RECORD</text>
+<rect x="752" y="218" width="404" height="50" rx="12" fill="#17313c"/>
+<text x="770" y="250" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="0">QUESTION TO ASK</text>
+<rect x="44" y="285" width="1112" height="99" rx="14" fill="#fffefa"/>
+<rect x="44" y="285" width="7" height="99" rx="3" fill="#f5dfd5"/>
+<text x="63" y="343" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">No target present</text>
+<text x="406" y="343" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">False positive</text>
+<text x="772" y="324" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Can the output</text>
+<text x="772" y="355" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">correctly stay empty?</text>
+<rect x="44" y="396" width="1112" height="99" rx="14" fill="#fffefa"/>
+<rect x="44" y="396" width="7" height="99" rx="3" fill="#dde9f2"/>
+<text x="63" y="454" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Near-matching objects</text>
+<text x="406" y="454" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Wrong inclusion</text>
+<text x="772" y="435" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Does the phrase</text>
+<text x="772" y="466" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">exclude distractors?</text>
+<rect x="44" y="507" width="1112" height="99" rx="14" fill="#fffefa"/>
+<rect x="44" y="507" width="7" height="99" rx="3" fill="#d8eee6"/>
+<text x="63" y="565" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Overlap or occlusion</text>
+<text x="406" y="565" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Miss / boundary error</text>
+<text x="772" y="546" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Were all intended</text>
+<text x="772" y="577" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">instances captured?</text>
+<rect x="44" y="618" width="1112" height="99" rx="14" fill="#fffefa"/>
+<rect x="44" y="618" width="7" height="99" rx="3" fill="#f5dfd5"/>
+<text x="63" y="676" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Exit and re-entry</text>
+<text x="406" y="676" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Identity switch</text>
+<text x="772" y="657" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Is this still the</text>
+<text x="772" y="688" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">same tracked object?</text>
+<text x="45" y="775" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" text-anchor="start" letter-spacing="0">Also record first-pass output and every human correction.</text>
+<text x="45" y="830" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" text-anchor="start" letter-spacing="0">PCPU proposed protocol • These are test categories, not empirical scores</text>
+<text x="1155" y="830" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="end" letter-spacing="1">PCPU / RESEARCH NOTES</text>
+</svg>

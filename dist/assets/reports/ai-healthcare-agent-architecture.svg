@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc"><title id="title">One conversation, three concurrent jobs</title><desc id="desc">Asynchronous work helps responsiveness; shared state still needs coordination.</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#187b76" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="800" rx="28" fill="#f6f4ed"/>
+<rect x="40" y="34" width="250" height="35" rx="18" fill="#187b76"/>
+<text x="58" y="58" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="1">PCPU CONCEPTUAL</text>
+<text x="44" y="119" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" text-anchor="start" letter-spacing="0">One conversation, three concurrent jobs</text>
+<text x="45" y="157" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Asynchronous work helps responsiveness; shared state still needs coordination.</text>
+<path d="M44 188H1156" stroke="#d2ddd6"/>
+<rect x="44" y="257" width="254" height="300" rx="20" fill="#17313c"/>
+<text x="71" y="303" fill="#b9e2d3" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="1">LIVE INTERACTION</text>
+<rect x="93" y="335" width="150" height="93" rx="12" fill="#294b56"/>
+<circle cx="168" cy="367" r="15" fill="#b9e2d3"/>
+<path d="M132 410 Q168 376 204 410" fill="none" stroke="#b9e2d3" stroke-width="7"/>
+<text x="71" y="473" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Audio + video</text>
+<text x="71" y="507" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">from patient actor</text>
+<rect x="361" y="228" width="338" height="157" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<circle cx="392" cy="263" r="17" fill="#dde9f2"/>
+<text x="392" y="270" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0">P</text>
+<text x="421" y="272" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" text-anchor="start" letter-spacing="0">Perception</text>
+<text x="385" y="318" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Observe incoming</text>
+<text x="385" y="349" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">audio-visual cues</text>
+<rect x="361" y="425" width="338" height="157" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<circle cx="392" cy="460" r="17" fill="#d8eee6"/>
+<text x="392" y="467" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0">P</text>
+<text x="421" y="469" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" text-anchor="start" letter-spacing="0">Planner</text>
+<text x="385" y="515" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Update reasoning</text>
+<text x="385" y="546" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">and information needs</text>
+<rect x="819" y="280" width="337" height="250" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<circle cx="853" cy="319" r="17" fill="#f5dfd5"/>
+<text x="853" y="326" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0">T</text>
+<text x="882" y="329" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" text-anchor="start" letter-spacing="0">Talker</text>
+<text x="846" y="380" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="400" text-anchor="start" letter-spacing="0">Maintain dialogue</text>
+<text x="846" y="417" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="400" text-anchor="start" letter-spacing="0">using available state</text>
+<path d="M298 303 L350 303" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M298 495 L350 495" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M705 306 H761 V368 H809" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M705 503 H761 V450 H809" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M985 537 V628 H170 V567" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="600" y="619" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="600" text-anchor="middle" letter-spacing="0">Spoken turn</text>
+<text x="770" y="256" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="600" text-anchor="middle" letter-spacing="0">Latest state</text>
+<text x="600" y="698" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="600" text-anchor="middle" letter-spacing="0">Key systems question: did the reply use the newest relevant evidence?</text>
+<text x="45" y="770" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" text-anchor="start" letter-spacing="0">PCPU simplified architecture • Arrows are conceptual, not a timing trace</text>
+<text x="1155" y="770" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="end" letter-spacing="1">PCPU / RESEARCH NOTES</text>
+</svg>

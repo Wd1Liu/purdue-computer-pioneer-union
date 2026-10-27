@@ -1,0 +1,51 @@
+[
+  {
+    "id": "chips-ai",
+    "path": "/notes/flashattention-4.html",
+    "title": "FlashAttention-4 Finds the Work Faster GPUs Leave Behind",
+    "sections": 6,
+    "figures": 2
+  },
+  {
+    "id": "quantitative-research",
+    "path": "/notes/rd-agent-quant.html",
+    "title": "When a Quant Agent Can Rewrite Its Own Experiment",
+    "sections": 6,
+    "figures": 2
+  },
+  {
+    "id": "robotics",
+    "path": "/notes/pi07-robot-coaching.html",
+    "title": "π0.7 and the Difference a Robot Coach Makes",
+    "sections": 6,
+    "figures": 2
+  },
+  {
+    "id": "autonomous-driving",
+    "path": "/notes/waymo-world-model.html",
+    "title": "Waymo’s World Model Turns “What If?” into a Test",
+    "sections": 6,
+    "figures": 2
+  },
+  {
+    "id": "ai-education",
+    "path": "/notes/ai-tutor-study-routine.html",
+    "title": "An AI Tutor Trial Shows Why the Study Routine Matters",
+    "sections": 6,
+    "figures": 2
+  },
+  {
+    "id": "ai-healthcare",
+    "path": "/notes/amie-video-consultations.html",
+    "title": "AMIE’s Video Study Tests More Than Medical Answers",
+    "sections": 6,
+    "figures": 2
+  },
+  {
+    "id": "multimodal-vision",
+    "path": "/notes/sam-3-concept-segmentation.html",
+    "title": "SAM 3 and the Problem of Finding Every Match",
+    "sections": 6,
+    "figures": 2
+  }
+]

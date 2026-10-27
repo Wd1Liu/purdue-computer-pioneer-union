@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc"><title id="title">Evidence has a boundary</title><desc id="desc">Simulated consultation performance is not a patient-outcome study.</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#187b76" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="800" rx="28" fill="#f6f4ed"/>
+<rect x="40" y="34" width="250" height="35" rx="18" fill="#187b76"/>
+<text x="58" y="58" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="1">PCPU EVIDENCE MAP</text>
+<text x="44" y="119" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" text-anchor="start" letter-spacing="0">Evidence has a boundary</text>
+<text x="45" y="157" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Simulated consultation performance is not a patient-outcome study.</text>
+<path d="M44 188H1156" stroke="#d2ddd6"/>
+<rect x="44" y="218" width="340" height="50" rx="12" fill="#17313c"/>
+<text x="62" y="250" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="0.4">EVIDENCE AVAILABLE</text>
+<rect x="403" y="218" width="350" height="50" rx="12" fill="#17313c"/>
+<text x="421" y="250" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="0.4">WHAT IT CAN EXAMINE</text>
+<rect x="772" y="218" width="384" height="50" rx="12" fill="#17313c"/>
+<text x="790" y="250" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="0.4">NOT ESTABLISHED</text>
+<rect x="44" y="287" width="1112" height="111" rx="14" fill="#fffefa"/>
+<rect x="772" y="287" width="384" height="111" rx="14" fill="#f5dfd5"/>
+<text x="64" y="329" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Standardized</text>
+<text x="64" y="362" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">patient actors</text>
+<text x="422" y="329" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Behavior within</text>
+<text x="422" y="362" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">scripted encounters</text>
+<text x="790" y="329" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Real-patient</text>
+<text x="790" y="362" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">outcome improvement</text>
+<rect x="44" y="413" width="1112" height="111" rx="14" fill="#fffefa"/>
+<rect x="772" y="413" width="384" height="111" rx="14" fill="#f5dfd5"/>
+<text x="64" y="455" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Independent</text>
+<text x="64" y="488" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">consultation ratings</text>
+<text x="422" y="455" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Quality under</text>
+<text x="422" y="488" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">the study’s rubrics</text>
+<text x="790" y="455" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Universal superiority</text>
+<text x="790" y="488" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">in every care setting</text>
+<rect x="44" y="539" width="1112" height="111" rx="14" fill="#fffefa"/>
+<rect x="772" y="539" width="384" height="111" rx="14" fill="#f5dfd5"/>
+<text x="64" y="581" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Concurrent agents</text>
+<text x="64" y="614" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">and video input</text>
+<text x="422" y="581" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">A working approach</text>
+<text x="422" y="614" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">to live interaction</text>
+<text x="790" y="581" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">Deployment readiness</text>
+<text x="790" y="614" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="400" text-anchor="start" letter-spacing="0">or error-free coordination</text>
+<rect x="44" y="687" width="1112" height="45" rx="10" fill="#d8eee6"/>
+<text x="65" y="717" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="start" letter-spacing="0">Read the deployment limitation alongside the strongest result.</text>
+<text x="45" y="770" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" text-anchor="start" letter-spacing="0">PCPU qualitative synthesis • No patient-level effect estimates</text>
+<text x="1155" y="770" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="end" letter-spacing="1">PCPU / RESEARCH NOTES</text>
+</svg>

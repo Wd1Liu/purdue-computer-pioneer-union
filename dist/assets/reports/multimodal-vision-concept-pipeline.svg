@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" role="img" aria-labelledby="title desc"><title id="title">From a concept to every matching instance</title><desc id="desc">The empty set is a valid output; temporal identity is another responsibility.</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#187b76" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="820" rx="28" fill="#f6f4ed"/>
+<rect x="40" y="34" width="250" height="35" rx="18" fill="#187b76"/>
+<text x="58" y="58" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="1">PCPU CONCEPTUAL</text>
+<text x="44" y="119" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" text-anchor="start" letter-spacing="0">From a concept to every matching instance</text>
+<text x="45" y="157" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">The empty set is a valid output; temporal identity is another responsibility.</text>
+<path d="M44 188H1156" stroke="#d2ddd6"/>
+<rect x="44" y="222" width="294" height="382" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<text x="65" y="259" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="0.5">SHORT CONCEPT PROMPT</text>
+<rect x="65" y="280" width="252" height="57" rx="12" fill="#d8eee6"/>
+<text x="88" y="318" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" text-anchor="start" letter-spacing="0">“red cups”</text>
+<rect x="83" y="385" width="52" height="53" rx="7" fill="#d27763"/>
+<path d="M135 395 H148 Q162 414 148 426 H135" fill="none" stroke="#d27763" stroke-width="7"/>
+<rect x="219" y="423" width="52" height="53" rx="7" fill="#d27763"/>
+<path d="M271 433 H284 Q298 452 284 464 H271" fill="none" stroke="#d27763" stroke-width="7"/>
+<rect x="149" y="502" width="52" height="53" rx="7" fill="#87aabb"/>
+<path d="M201 512 H214 Q228 531 214 543 H201" fill="none" stroke="#87aabb" stroke-width="7"/>
+<text x="66" y="584" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="400" text-anchor="start" letter-spacing="0">Synthetic scene</text>
+<rect x="392" y="225" width="316" height="155" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<circle cx="423" cy="260" r="17" fill="#dde9f2"/>
+<text x="423" y="267" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0">1</text>
+<text x="452" y="269" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" text-anchor="start" letter-spacing="0">Recognize</text>
+<text x="416" y="315" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Does the concept</text>
+<text x="416" y="346" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">appear in this scene?</text>
+<rect x="392" y="431" width="316" height="174" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<circle cx="423" cy="466" r="17" fill="#d8eee6"/>
+<text x="423" y="473" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0">2</text>
+<text x="452" y="475" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" text-anchor="start" letter-spacing="0">Localize</text>
+<text x="416" y="521" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Return a mask for</text>
+<text x="416" y="552" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">each matching instance</text>
+<path d="M340 310 L380 310" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M549 385 L549 421" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="814" y="226" width="342" height="152" rx="18" fill="#f5dfd5"/>
+<text x="838" y="267" fill="#915638" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="1">IF ABSENT</text>
+<text x="838" y="312" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700" text-anchor="start" letter-spacing="0">Return no matches</text>
+<text x="838" y="347" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="400" text-anchor="start" letter-spacing="0">Not the closest-looking object</text>
+<path d="M714 302 L802 302" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="814" y="432" width="342" height="173" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<text x="838" y="473" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="1">IN VIDEO</text>
+<text x="838" y="517" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" text-anchor="start" letter-spacing="0">Track identity</text>
+<text x="838" y="557" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="400" text-anchor="start" letter-spacing="0">Keep instances distinct over time</text>
+<path d="M714 519 L802 519" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="44" y="657" width="1112" height="76" rx="15" fill="#17313c"/>
+<text x="69" y="704" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" text-anchor="start" letter-spacing="0">Presence ≠ mask quality ≠ identity consistency</text>
+<text x="45" y="790" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" text-anchor="start" letter-spacing="0">PCPU conceptual illustration • Synthetic shapes, not model outputs</text>
+<text x="1155" y="790" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="end" letter-spacing="1">PCPU / RESEARCH NOTES</text>
+</svg>

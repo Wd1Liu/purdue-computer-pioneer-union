@@ -1,0 +1,992 @@
+{
+  "posts": [
+    {
+      "id": "chips-ai",
+      "category": "Kernel engineering",
+      "eyebrow": "Research note · GPU systems",
+      "title": "FlashAttention-4 Finds the Work Faster GPUs Leave Behind",
+      "deck": "Blackwell makes matrix multiplication faster, but attention still has other work to do. FlashAttention-4 shows why the next performance gain can come from scheduling, exponentials, and moving less data.",
+      "researchLabel": "FlashAttention-4 · March 2026",
+      "researchDate": "2026-03-05",
+      "researchDateType": "Preprint submitted",
+      "tags": [
+        "FlashAttention-4",
+        "GPU kernels",
+        "Hardware–software co-design"
+      ],
+      "readTime": "4 min read",
+      "body": [
+        "A more powerful GPU does not make every part of a program faster. Think of attention as a small production line: compare tokens, normalize their scores, then combine their values. Improving only the comparison machines can leave the rest of that line struggling to keep up. FlashAttention-4 is interesting because it starts with this imbalance rather than treating peak matrix throughput as a complete description of the hardware.",
+        "The March 2026 preprint targets NVIDIA Blackwell. Its authors identify a shift toward exponential computation and shared-memory traffic as important constraints. That turns an apparently narrow kernel paper into a useful systems lesson: the work surrounding the famous operation can determine whether the famous operation delivers its promised benefit.",
+        "The authors’ technical walkthrough explains a forward pipeline that alternates between two query tiles. While one tile uses the matrix units, the other advances through softmax. Different groups of GPU threads handle different responsibilities, coordinating rather than attempting every operation simultaneously. A separate correction stage keeps rescaling work away from the most time-sensitive path.",
+        "The implementation also redirects a portion of exponential calculations to ordinary arithmetic units using a polynomial approximation. In the backward pass, tensor memory stores intermediate results, while paired thread blocks reduce shared-memory traffic and some gradient-reduction work. These are distinct interventions: scheduling hides waits; changing where data lives avoids traffic; redistributing arithmetic relieves a crowded unit. Calling all three “faster attention” is accurate but loses the explanation.",
+        "Table 1 makes the motivation unusually concrete. For a 128 × 128 tile with head dimension 128, the simplified forward analysis assigns 1,024 cycles each to matrix computation and exponentials, versus 768 to shared memory. These are modeled resource requirements, not measured end-to-end latency, and overlapping them is precisely the point.",
+        "The paper separately reports peak kernel speedups of up to 1.3× over cuDNN 9.13 and 2.7× over Triton on B200 with BF16 inputs. Its benchmark varies sequence length, head dimensions, and causal masking. A best-case comparison across tested configurations is not a universal multiplier for a model, a training run, or an inference service.",
+        "PyTorch’s accompanying release connects the backend to FlexAttention. Researchers express score changes or masks in Python, and the integration generates the corresponding CuTeDSL customization. The practical attraction is not merely a shorter kernel: an experimental attention pattern can retain a high-performance implementation without immediately requiring a separate low-level rewrite. The release also warns that the integration was actively evolving, making version compatibility part of reproducibility.",
+        "Our interpretation is that this changes which ideas are affordable to investigate. A technique that works only in a hand-tuned special case may struggle to become a research tool. A configurable implementation makes it easier to ask whether an architectural idea survives outside the benchmark that originally motivated it.",
+        "For a deployment decision, we would separate three questions. Is the kernel faster for the actual tensor shapes? Is it numerically suitable for the intended workload? Does the full application improve after integration? Those questions can have different answers. Short sequences, communication, optimizer updates, data loading, or another layer may leave little attention time available to remove.",
+        "We would also resist averaging away inconvenient cases. A dashboard should retain the slow configurations and the shapes that do not fit the optimized path. Report compilation separately from steady-state execution, and keep correctness checks beside throughput. That makes a regression visible instead of allowing an attractive peak number to hide it. This is a proposed evaluation discipline, not an additional result established by the paper.",
+        "Start with one model and capture its real attention shapes. Compare implementations under matching dtype, masking, device, and software settings, after warm-up. Then time complete training steps or complete requests. The important artifact is a paired record: the local improvement and the global improvement observed under the same conditions.",
+        "Next, ask what now occupies the saved time. A profiler trace may show a different bottleneck emerging; that is a productive outcome, not a disappointment. Finally, test whether a custom attention modification retains both its intended behavior and its speed advantage. Our takeaway is that hardware–software co-design is a repeated measurement practice. Faster chips move the target, and better kernels make the next constraint easier to see."
+      ],
+      "question": "If attention becomes twice as fast in your model, which measurement would reveal what now limits the whole training step?",
+      "sources": [
+        {
+          "label": "FlashAttention-4 paper · submitted 5 March 2026",
+          "url": "https://arxiv.org/abs/2603.05451",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "FlashAttention-4 paper · submitted 5 March 2026"
+        },
+        {
+          "label": "Authors’ technical walkthrough · Together AI",
+          "url": "https://www.together.ai/blog/flashattention-4",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "Authors’ technical walkthrough · Together AI"
+        },
+        {
+          "label": "PyTorch: FlexAttention + FlashAttention-4 · 5 March 2026",
+          "url": "https://pytorch.org/blog/flexattention-flashattention-4-fast-and-flexible/",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "PyTorch: FlexAttention + FlashAttention-4 · 5 March 2026"
+        }
+      ],
+      "publicationStatus": "Research preprint",
+      "sections": [
+        {
+          "heading": "The faster part is no longer the slow part",
+          "paragraphs": [
+            "A more powerful GPU does not make every part of a program faster. Think of attention as a small production line: compare tokens, normalize their scores, then combine their values. Improving only the comparison machines can leave the rest of that line struggling to keep up. FlashAttention-4 is interesting because it starts with this imbalance rather than treating peak matrix throughput as a complete description of the hardware.",
+            "The March 2026 preprint targets NVIDIA Blackwell. Its authors identify a shift toward exponential computation and shared-memory traffic as important constraints. That turns an apparently narrow kernel paper into a useful systems lesson: the work surrounding the famous operation can determine whether the famous operation delivers its promised benefit."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "The mechanism: overlap work, then remove work",
+          "paragraphs": [
+            "The authors’ technical walkthrough explains a forward pipeline that alternates between two query tiles. While one tile uses the matrix units, the other advances through softmax. Different groups of GPU threads handle different responsibilities, coordinating rather than attempting every operation simultaneously. A separate correction stage keeps rescaling work away from the most time-sensitive path.",
+            "The implementation also redirects a portion of exponential calculations to ordinary arithmetic units using a polynomial approximation. In the backward pass, tensor memory stores intermediate results, while paired thread blocks reduce shared-memory traffic and some gradient-reduction work. These are distinct interventions: scheduling hides waits; changing where data lives avoids traffic; redistributing arithmetic relieves a crowded unit. Calling all three “faster attention” is accurate but loses the explanation."
+          ],
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "heading": "What the measurements actually say",
+          "paragraphs": [
+            "Table 1 makes the motivation unusually concrete. For a 128 × 128 tile with head dimension 128, the simplified forward analysis assigns 1,024 cycles each to matrix computation and exponentials, versus 768 to shared memory. These are modeled resource requirements, not measured end-to-end latency, and overlapping them is precisely the point.",
+            "The paper separately reports peak kernel speedups of up to 1.3× over cuDNN 9.13 and 2.7× over Triton on B200 with BF16 inputs. Its benchmark varies sequence length, head dimensions, and causal masking. A best-case comparison across tested configurations is not a universal multiplier for a model, a training run, or an inference service."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "Why the programming interface belongs in the story",
+          "paragraphs": [
+            "PyTorch’s accompanying release connects the backend to FlexAttention. Researchers express score changes or masks in Python, and the integration generates the corresponding CuTeDSL customization. The practical attraction is not merely a shorter kernel: an experimental attention pattern can retain a high-performance implementation without immediately requiring a separate low-level rewrite. The release also warns that the integration was actively evolving, making version compatibility part of reproducibility.",
+            "Our interpretation is that this changes which ideas are affordable to investigate. A technique that works only in a hand-tuned special case may struggle to become a research tool. A configurable implementation makes it easier to ask whether an architectural idea survives outside the benchmark that originally motivated it."
+          ],
+          "sourceRefs": [
+            3
+          ]
+        },
+        {
+          "heading": "The limit is the system around the kernel",
+          "paragraphs": [
+            "For a deployment decision, we would separate three questions. Is the kernel faster for the actual tensor shapes? Is it numerically suitable for the intended workload? Does the full application improve after integration? Those questions can have different answers. Short sequences, communication, optimizer updates, data loading, or another layer may leave little attention time available to remove.",
+            "We would also resist averaging away inconvenient cases. A dashboard should retain the slow configurations and the shapes that do not fit the optimized path. Report compilation separately from steady-state execution, and keep correctness checks beside throughput. That makes a regression visible instead of allowing an attractive peak number to hide it. This is a proposed evaluation discipline, not an additional result established by the paper."
+          ],
+          "sourceRefs": []
+        },
+        {
+          "heading": "A useful student-scale reproduction",
+          "paragraphs": [
+            "Start with one model and capture its real attention shapes. Compare implementations under matching dtype, masking, device, and software settings, after warm-up. Then time complete training steps or complete requests. The important artifact is a paired record: the local improvement and the global improvement observed under the same conditions.",
+            "Next, ask what now occupies the saved time. A profiler trace may show a different bottleneck emerging; that is a productive outcome, not a disappointment. Finally, test whether a custom attention modification retains both its intended behavior and its speed advantage. Our takeaway is that hardware–software co-design is a repeated measurement practice. Faster chips move the target, and better kernels make the next constraint easier to see."
+          ],
+          "sourceRefs": []
+        }
+      ],
+      "takeaway": "A kernel speedup is a hypothesis about an application, not the application result itself.",
+      "sourceStatus": "Research preprint",
+      "format": "Illustrated research report",
+      "wordCount": 700,
+      "figures": [
+        {
+          "src": "flashattention-pipeline.svg",
+          "alt": "Conceptual diagram showing attention scores, softmax and value mixing, with overlapping work on two query tiles and tensor-memory assistance.",
+          "caption": "Conceptual diagram • PCPU. Scheduling and memory responsibilities are simplified; block widths do not represent measured time. Based on the authors’ forward and backward explanations.",
+          "sourceUrl": "https://www.together.ai/blog/flashattention-4",
+          "kind": "conceptual",
+          "afterSection": 1
+        },
+        {
+          "src": "flashattention-roofline.svg",
+          "alt": "Grouped bars of modeled forward-pass resource cycles: 128 cubed configuration uses 1024 matrix, 768 shared-memory and 1024 exponential cycles; 256 by 128 squared uses 2048,1536,2048.",
+          "caption": "PCPU redraw of FlashAttention-4, Table 1, PDF p. 6 (arXiv v1, 5 March 2026). Simplified roofline requirements in cycles, not observed latency. M and N are query/key tile lengths; d is head dimension. Resource times can overlap and must not be added.",
+          "sourceUrl": "https://arxiv.org/pdf/2603.05451",
+          "kind": "source-data-chart",
+          "afterSection": 2,
+          "sourceLocation": "Table 1, printed page 6, PDF page index 5",
+          "data": [
+            {
+              "resource": "Matrix compute",
+              "128x128x128": 1024,
+              "256x128x128": 2048
+            },
+            {
+              "resource": "Shared memory",
+              "128x128x128": 768,
+              "256x128x128": 1536
+            },
+            {
+              "resource": "Exponentials",
+              "128x128x128": 1024,
+              "256x128x128": 2048
+            }
+          ]
+        }
+      ],
+      "editorialNote": "PCPU analysis. Source findings and our proposed tests are identified separately. Figures are original editorial redraws, not author-provided artwork.",
+      "takeaways": [
+        "A kernel speedup is a hypothesis about an application, not the application result itself."
+      ]
+    },
+    {
+      "id": "quantitative-research",
+      "category": "Research agents",
+      "eyebrow": "Research note · Automated discovery",
+      "researchLabel": "R&D-Agent-Quant · NeurIPS 2025",
+      "researchDate": "2025-05-21",
+      "researchDateType": "First preprint submitted",
+      "publicationStatus": "Peer-reviewed conference paper · NeurIPS 2025",
+      "tags": [
+        "Research agents",
+        "Evaluation"
+      ],
+      "readTime": "4 min read",
+      "title": "When a Quant Agent Can Rewrite Its Own Experiment",
+      "deck": "R&D-Agent-Quant links financial hypotheses, executable code, and backtest feedback. Its most interesting contribution is a research loop we can inspect, along with new reasons to protect the evaluation.",
+      "body": [
+        "The most interesting question for a quantitative-research agent is not “Which stock would you buy?” It is “What experiment would change your mind?” A persuasive market explanation is easy to generate. A useful research assistant must turn that explanation into an executable test, notice when the implementation is wrong, and distinguish a promising result from a lucky search outcome.",
+        "R&D-Agent-Quant, published at NeurIPS 2025, connects those activities. It can revise both factors—the inputs intended to capture useful patterns—and the model that combines them. The claim worth examining is therefore about research coordination, not dependable future returns. Treating the system as an automated experimenter reveals both its value and its central evaluation risk.",
+        "The paper organizes work into specification, synthesis, implementation, validation, and analysis. A hypothesis becomes a coding task; Co-STEER implements it; a backtest generates feedback. A multi-armed bandit scheduler chooses whether subsequent effort should target factors or models. Previous experiments remain available to inform the next proposal.",
+        "Conceptually, the distinction matters because better inputs and a better learner are not interchangeable. A richer model may be unable to recover information missing from its features. Conversely, adding more features can make little difference if the model cannot use them. Joint search makes that interaction explicit. Our reading is that the agent’s real object of optimization is the experiment sequence, rather than any single generated formula.",
+        "The paper reports improvements against tested factor libraries and predictive models on CSI 300 data. Its revised evaluation extends to CSI 500 and NASDAQ 100, with held-out periods from January 2024 through June 2025. This broadens the tested settings, but the language-model cutoff discussion also needs care: one reported backend has a June 2024 cutoff, inside that evaluation interval.",
+        "A historical test can establish that a particular pipeline performed well under particular assumptions. It cannot, on its own, establish that the discovered relationship will persist. Nor does a favorable average settle how much performance comes from search budget, model choice, portfolio construction, or the market period. Those are separate comparisons we would want before interpreting the agent as a general research improvement.",
+        "The official documentation exposes the practical machinery: Qlib configuration, time splits, data preprocessing, portfolio rules, costs, and recorded signal and portfolio analyses. Microsoft also provides the framework’s source code. Those resources make inspection possible, but running an example configuration is not automatically a reproduction of the paper’s revised experiments.",
+        "For a careful replication, we would pin a repository revision, identify the exact dataset snapshot, and save the configuration alongside every result. We would record the agent backend and the failures it encountered, not just its final successful code. This produces a more informative artifact than a screenshot of a rising backtest curve: a chain showing which evidence was available when each decision was made.",
+        "The risk is not only that an agent sees tomorrow’s price directly. A researcher can also gradually adapt to an evaluation period by repeatedly inspecting its score. If every disappointing result becomes a new prompt, the supposed final test has become part of development. More experiments then create more chances to select a pattern that was unusually fortunate in that window.",
+        "Our proposed safeguard is an information boundary. Let the research loop see training and development feedback, but keep the final period inaccessible until the experiment plan is frozen. Compare methods using matched search budgets and record all attempts. Include simple baselines, rerun with different seeds, and test sensitivity to costs. These are recommendations for evaluating automated discovery; they are not a claim that the published study secretly used its holdout.",
+        "A student project could begin with one modest hypothesis class and one fixed execution environment. Ask the agent to produce the hypothesis, implementation, expected failure modes, and a short account of what changed after feedback. A human reviewer should be able to follow the chain without reconstructing a private conversation.",
+        "Then run a frozen final evaluation and retain the negative results. An agent that helps explain why an idea failed may be more useful than one that only presents its best outcome. Our takeaway is that research automation should increase experimental accountability alongside experimental throughput. The better question is not whether an agent can find an impressive backtest, but whether its selection process produces discoveries that survive genuinely new evidence."
+      ],
+      "question": "What should an automated researcher be allowed to see before its final evaluation?",
+      "sources": [
+        {
+          "label": "R&D-Agent-Quant · revised paper, September 2025",
+          "url": "https://arxiv.org/html/2505.15155v2",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "R&D-Agent-Quant · revised paper, September 2025"
+        },
+        {
+          "label": "NeurIPS 2025 conference publication",
+          "url": "https://proceedings.neurips.cc/paper_files/paper/2025/hash/ac5c2b6e423883cbcacbcccf88491b78-Abstract-Datasets_and_Benchmarks_Track.html",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "NeurIPS 2025 conference publication"
+        },
+        {
+          "label": "Microsoft: RD-Agent source code",
+          "url": "https://github.com/microsoft/RD-Agent",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "Microsoft: RD-Agent source code"
+        },
+        {
+          "label": "Official documentation · Finance Quant Agent configuration",
+          "url": "https://rdagent.readthedocs.io/en/latest/scens/quant_agent_fin.html",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "Official documentation · Finance Quant Agent configuration"
+        }
+      ],
+      "sections": [
+        {
+          "heading": "The experiment is the product",
+          "paragraphs": [
+            "The most interesting question for a quantitative-research agent is not “Which stock would you buy?” It is “What experiment would change your mind?” A persuasive market explanation is easy to generate. A useful research assistant must turn that explanation into an executable test, notice when the implementation is wrong, and distinguish a promising result from a lucky search outcome.",
+            "R&D-Agent-Quant, published at NeurIPS 2025, connects those activities. It can revise both factors—the inputs intended to capture useful patterns—and the model that combines them. The claim worth examining is therefore about research coordination, not dependable future returns. Treating the system as an automated experimenter reveals both its value and its central evaluation risk."
+          ],
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "heading": "A loop with two places to intervene",
+          "paragraphs": [
+            "The paper organizes work into specification, synthesis, implementation, validation, and analysis. A hypothesis becomes a coding task; Co-STEER implements it; a backtest generates feedback. A multi-armed bandit scheduler chooses whether subsequent effort should target factors or models. Previous experiments remain available to inform the next proposal.",
+            "Conceptually, the distinction matters because better inputs and a better learner are not interchangeable. A richer model may be unable to recover information missing from its features. Conversely, adding more features can make little difference if the model cannot use them. Joint search makes that interaction explicit. Our reading is that the agent’s real object of optimization is the experiment sequence, rather than any single generated formula."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "Read the evidence as a historical test",
+          "paragraphs": [
+            "The paper reports improvements against tested factor libraries and predictive models on CSI 300 data. Its revised evaluation extends to CSI 500 and NASDAQ 100, with held-out periods from January 2024 through June 2025. This broadens the tested settings, but the language-model cutoff discussion also needs care: one reported backend has a June 2024 cutoff, inside that evaluation interval.",
+            "A historical test can establish that a particular pipeline performed well under particular assumptions. It cannot, on its own, establish that the discovered relationship will persist. Nor does a favorable average settle how much performance comes from search budget, model choice, portfolio construction, or the market period. Those are separate comparisons we would want before interpreting the agent as a general research improvement."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "The reproducibility surface is larger than the prompt",
+          "paragraphs": [
+            "The official documentation exposes the practical machinery: Qlib configuration, time splits, data preprocessing, portfolio rules, costs, and recorded signal and portfolio analyses. Microsoft also provides the framework’s source code. Those resources make inspection possible, but running an example configuration is not automatically a reproduction of the paper’s revised experiments.",
+            "For a careful replication, we would pin a repository revision, identify the exact dataset snapshot, and save the configuration alongside every result. We would record the agent backend and the failures it encountered, not just its final successful code. This produces a more informative artifact than a screenshot of a rising backtest curve: a chain showing which evidence was available when each decision was made."
+          ],
+          "sourceRefs": [
+            3,
+            4
+          ]
+        },
+        {
+          "heading": "More automation makes the holdout more valuable",
+          "paragraphs": [
+            "The risk is not only that an agent sees tomorrow’s price directly. A researcher can also gradually adapt to an evaluation period by repeatedly inspecting its score. If every disappointing result becomes a new prompt, the supposed final test has become part of development. More experiments then create more chances to select a pattern that was unusually fortunate in that window.",
+            "Our proposed safeguard is an information boundary. Let the research loop see training and development feedback, but keep the final period inaccessible until the experiment plan is frozen. Compare methods using matched search budgets and record all attempts. Include simple baselines, rerun with different seeds, and test sensitivity to costs. These are recommendations for evaluating automated discovery; they are not a claim that the published study secretly used its holdout."
+          ],
+          "sourceRefs": []
+        },
+        {
+          "heading": "The useful output is a research ledger",
+          "paragraphs": [
+            "A student project could begin with one modest hypothesis class and one fixed execution environment. Ask the agent to produce the hypothesis, implementation, expected failure modes, and a short account of what changed after feedback. A human reviewer should be able to follow the chain without reconstructing a private conversation.",
+            "Then run a frozen final evaluation and retain the negative results. An agent that helps explain why an idea failed may be more useful than one that only presents its best outcome. Our takeaway is that research automation should increase experimental accountability alongside experimental throughput. The better question is not whether an agent can find an impressive backtest, but whether its selection process produces discoveries that survive genuinely new evidence."
+          ],
+          "sourceRefs": []
+        }
+      ],
+      "takeaway": "Automating experiments raises the value of a protected holdout and a complete record of attempted ideas.",
+      "sourceStatus": "Peer-reviewed conference paper · NeurIPS 2025",
+      "format": "Illustrated research report",
+      "wordCount": 715,
+      "figures": [
+        {
+          "src": "quant-research-loop.svg",
+          "alt": "Conceptual agent loop from hypothesis through code, backtest and analysis, with a scheduler choosing factor or model changes and a separate locked final holdout.",
+          "caption": "Conceptual diagram • PCPU. The hypothesis–code–feedback loop summarizes the paper; the separate locked holdout is our proposed replication safeguard, not a claim about an additional author experiment.",
+          "sourceUrl": "https://arxiv.org/html/2505.15155v2",
+          "kind": "conceptual",
+          "afterSection": 1
+        },
+        {
+          "src": "quant-evidence-matrix.svg",
+          "alt": "Editorial matrix contrasting executable code, historical backtests, cross-market tests and future evidence with what each can and cannot establish.",
+          "caption": "Evidence-reading matrix • PCPU. Qualitative distinctions, not scores. Historical performance and future durability are different questions; this matrix is an editorial reading guide.",
+          "sourceUrl": "https://arxiv.org/html/2505.15155v2",
+          "kind": "evidence-matrix",
+          "afterSection": 4
+        }
+      ],
+      "editorialNote": "PCPU analysis. Source findings and our proposed tests are identified separately. Figures are original editorial redraws, not author-provided artwork.",
+      "takeaways": [
+        "Automating experiments raises the value of a protected holdout and a complete record of attempted ideas."
+      ]
+    },
+    {
+      "id": "robotics",
+      "category": "Robot generalization",
+      "eyebrow": "Research note · Learning through coaching",
+      "researchLabel": "π0.7 · April 2026",
+      "researchDate": "2026-04-16",
+      "researchDateType": "Company research report released",
+      "publicationStatus": "Company research report",
+      "tags": [
+        "Robotics",
+        "Learning from context"
+      ],
+      "readTime": "4 min read",
+      "title": "π0.7 and the Difference a Robot Coach Makes",
+      "deck": "Physical Intelligence’s π0.7 uses richer prompts to combine diverse robot experience. Its appliance experiments suggest a practical route to new skills, but coaching and unaided generalization need separate scorecards.",
+      "body": [
+        "A robot loading a sweet potato into an air fryer is a compact test of a very large claim. The scene requires recognizing an appliance, choosing a sequence, manipulating unfamiliar parts, and knowing when a step has worked. Physical Intelligence’s April 2026 π0.7 report provides an especially useful comparison: a single instruction yields a partial attempt, while step-by-step language coaching makes execution more effective.",
+        "That difference is not a reason to dismiss the result. It identifies the interface through which a person can contribute missing task knowledge. But it also means that “the robot completed the task” is an incomplete description. Before judging generalization, we need to know who supplied the plan, when they supplied it, and whether the system was adapted afterward.",
+        "The technical paper unifies several forms of context for a vision-language-action model: task language, more detailed instructions, visual subgoals, control-mode labels, and episode metadata. The metadata can describe qualities such as speed and performance. This lets training distinguish behaviors that should not be treated as equally desirable, including suboptimal autonomous experience.",
+        "At execution time, a human coach or a high-level policy can provide the next subtask; a world model can supply a visual subgoal. The action model combines context with observations to produce motion. Our interpretation is that prompting becomes a routing interface through the model’s experience. “What should happen?” and “How should it happen?” become different pieces of information rather than one overloaded sentence.",
+        "The release demonstrates unfamiliar appliance tasks with coaching, and describes fine-tuning a high-level policy from that coaching for later autonomous execution. It also reports laundry folding on a two-arm UR5e system without collecting laundry-folding examples on that particular robot. These are meaningful but different forms of transfer.",
+        "The authors additionally found related air-fryer interactions in the broader training collection. That is important context: a new combination of familiar ingredients is not the same as a completely unseen object or action. We would therefore describe the evidence in separate columns—single-instruction execution, coached execution, and execution after adaptation—rather than compressing all three into one success claim.",
+        "This division of labor has a clear predecessor in Physical Intelligence’s Hi Robot work. A high-level vision-language model interprets instructions and feedback, then issues simpler commands to a lower-level action policy. The design gives task decomposition an explicit place in the system instead of expecting one reactive policy to solve every semantic problem at once.",
+        "For evaluation, that means the planning layer is not invisible scaffolding. If it was trained for the appliance, its contribution belongs in the description. If a human generated the steps, that labor belongs in the measurement. Neither condition makes the lower-level capability uninteresting. It changes which capability has been demonstrated and which deployment burden remains.",
+        "Our proposed test would hold out appliances, rooms, and coaches. The coach should receive a fixed instruction budget and should not quietly restart failures until a clean video appears. Record interventions, pauses, recoveries, and completed task stages. A system that succeeds with a small clarification is different from one that requires a person to supervise every grasp.",
+        "We would also include deliberately ambiguous instructions. Does the robot ask for clarification, choose a reasonable interpretation, or continue confidently with the wrong object? That matters because useful language following includes managing uncertainty, not merely complying with detailed commands. These are questions for a next experiment, not failures established by the existing demonstrations.",
+        "Finally, transfer the coached procedure to a second environment without silently adding new training. A useful result would reveal what the model retained: a transferable procedure, a dependence on visual layout, or a sequence that works only when the same person guides it.",
+        "For builders, the attractive possibility is that explaining a task could sometimes replace collecting another full set of teleoperated demonstrations. Our judgment is conditional: the interface becomes valuable when the reduction in demonstration work exceeds the new costs of coaching, verification, and exception handling. That comparison should be measured rather than inferred from a successful clip.",
+        "The broader takeaway is to treat assistance as a design variable, not an embarrassment to remove from the headline. A capable robot and an effective coach can form a useful system before the robot is fully independent. The research becomes easier to understand when we say precisely which parts of that partnership have generalized, and which still depend on task-specific help."
+      ],
+      "question": "When does human coaching count as generalization, and when should we call it task-specific training?",
+      "sources": [
+        {
+          "label": "Physical Intelligence: π0.7 research report · 16 April 2026",
+          "url": "https://www.pi.website/blog/pi07",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "Physical Intelligence: π0.7 research report · 16 April 2026"
+        },
+        {
+          "label": "π0.7 technical paper",
+          "url": "https://www.pi.website/download/pi07.pdf",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "π0.7 technical paper"
+        },
+        {
+          "label": "Physical Intelligence · Hi Robot: hierarchical planning and feedback",
+          "url": "https://www.pi.website/research/hirobot",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "Physical Intelligence · Hi Robot: hierarchical planning and feedback"
+        }
+      ],
+      "sections": [
+        {
+          "heading": "Watch the help, not only the hands",
+          "paragraphs": [
+            "A robot loading a sweet potato into an air fryer is a compact test of a very large claim. The scene requires recognizing an appliance, choosing a sequence, manipulating unfamiliar parts, and knowing when a step has worked. Physical Intelligence’s April 2026 π0.7 report provides an especially useful comparison: a single instruction yields a partial attempt, while step-by-step language coaching makes execution more effective.",
+            "That difference is not a reason to dismiss the result. It identifies the interface through which a person can contribute missing task knowledge. But it also means that “the robot completed the task” is an incomplete description. Before judging generalization, we need to know who supplied the plan, when they supplied it, and whether the system was adapted afterward."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "Prompting describes a strategy, not just a destination",
+          "paragraphs": [
+            "The technical paper unifies several forms of context for a vision-language-action model: task language, more detailed instructions, visual subgoals, control-mode labels, and episode metadata. The metadata can describe qualities such as speed and performance. This lets training distinguish behaviors that should not be treated as equally desirable, including suboptimal autonomous experience.",
+            "At execution time, a human coach or a high-level policy can provide the next subtask; a world model can supply a visual subgoal. The action model combines context with observations to produce motion. Our interpretation is that prompting becomes a routing interface through the model’s experience. “What should happen?” and “How should it happen?” become different pieces of information rather than one overloaded sentence."
+          ],
+          "sourceRefs": [
+            2
+          ]
+        },
+        {
+          "heading": "There are three different achievements here",
+          "paragraphs": [
+            "The release demonstrates unfamiliar appliance tasks with coaching, and describes fine-tuning a high-level policy from that coaching for later autonomous execution. It also reports laundry folding on a two-arm UR5e system without collecting laundry-folding examples on that particular robot. These are meaningful but different forms of transfer.",
+            "The authors additionally found related air-fryer interactions in the broader training collection. That is important context: a new combination of familiar ingredients is not the same as a completely unseen object or action. We would therefore describe the evidence in separate columns—single-instruction execution, coached execution, and execution after adaptation—rather than compressing all three into one success claim."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "Why a high-level policy changes the accounting",
+          "paragraphs": [
+            "This division of labor has a clear predecessor in Physical Intelligence’s Hi Robot work. A high-level vision-language model interprets instructions and feedback, then issues simpler commands to a lower-level action policy. The design gives task decomposition an explicit place in the system instead of expecting one reactive policy to solve every semantic problem at once.",
+            "For evaluation, that means the planning layer is not invisible scaffolding. If it was trained for the appliance, its contribution belongs in the description. If a human generated the steps, that labor belongs in the measurement. Neither condition makes the lower-level capability uninteresting. It changes which capability has been demonstrated and which deployment burden remains."
+          ],
+          "sourceRefs": [
+            3
+          ]
+        },
+        {
+          "heading": "The missing scorecard is the cost of assistance",
+          "paragraphs": [
+            "Our proposed test would hold out appliances, rooms, and coaches. The coach should receive a fixed instruction budget and should not quietly restart failures until a clean video appears. Record interventions, pauses, recoveries, and completed task stages. A system that succeeds with a small clarification is different from one that requires a person to supervise every grasp.",
+            "We would also include deliberately ambiguous instructions. Does the robot ask for clarification, choose a reasonable interpretation, or continue confidently with the wrong object? That matters because useful language following includes managing uncertainty, not merely complying with detailed commands. These are questions for a next experiment, not failures established by the existing demonstrations.",
+            "Finally, transfer the coached procedure to a second environment without silently adding new training. A useful result would reveal what the model retained: a transferable procedure, a dependence on visual layout, or a sequence that works only when the same person guides it."
+          ],
+          "sourceRefs": []
+        },
+        {
+          "heading": "A practical interface, with an honest boundary",
+          "paragraphs": [
+            "For builders, the attractive possibility is that explaining a task could sometimes replace collecting another full set of teleoperated demonstrations. Our judgment is conditional: the interface becomes valuable when the reduction in demonstration work exceeds the new costs of coaching, verification, and exception handling. That comparison should be measured rather than inferred from a successful clip.",
+            "The broader takeaway is to treat assistance as a design variable, not an embarrassment to remove from the headline. A capable robot and an effective coach can form a useful system before the robot is fully independent. The research becomes easier to understand when we say precisely which parts of that partnership have generalized, and which still depend on task-specific help."
+          ],
+          "sourceRefs": []
+        }
+      ],
+      "takeaway": "Coaching can be a useful capability without being mistaken for unaided autonomy.",
+      "sourceStatus": "Company research report",
+      "format": "Illustrated research report",
+      "wordCount": 725,
+      "figures": [
+        {
+          "src": "pi07-context.svg",
+          "alt": "Conceptual diagram of language, visual subgoals and metadata feeding a vision-language-action model with observations, followed by robot action and observation feedback.",
+          "caption": "Conceptual diagram • PCPU. Simplified from π0.7’s context-conditioning design. A human or high-level policy can supply subtask language; the diagram does not imply every experiment uses every input.",
+          "sourceUrl": "https://www.pi.website/download/pi07.pdf",
+          "kind": "conceptual",
+          "afterSection": 1
+        },
+        {
+          "src": "pi07-assistance-matrix.svg",
+          "alt": "Three-column qualitative matrix separating single-instruction, human-coached and adapted-policy execution, and specifying what must be recorded for each.",
+          "caption": "Evidence-reading matrix • PCPU. Three assistance conditions should be reported separately. The recording checklist is an editorial evaluation proposal, not a quantitative result from the report.",
+          "sourceUrl": "https://www.pi.website/blog/pi07",
+          "kind": "evidence-matrix",
+          "afterSection": 4
+        }
+      ],
+      "editorialNote": "PCPU analysis. Source findings and our proposed tests are identified separately. Figures are original editorial redraws, not author-provided artwork.",
+      "takeaways": [
+        "Coaching can be a useful capability without being mistaken for unaided autonomy."
+      ]
+    },
+    {
+      "id": "autonomous-driving",
+      "category": "World models",
+      "eyebrow": "Research note · Counterfactual simulation",
+      "researchLabel": "Waymo World Model · February 2026",
+      "researchDate": "2026-02-06",
+      "researchDateType": "Technical announcement published",
+      "publicationStatus": "Company technical release",
+      "tags": [
+        "Simulation",
+        "Autonomy"
+      ],
+      "readTime": "4 min read",
+      "title": "Waymo’s World Model Turns “What If?” into a Test",
+      "deck": "Waymo’s World Model generates camera and lidar scenes that respond to driving actions. That opens useful counterfactual tests, while raising a harder question: how do we validate the simulated world?",
+      "body": [
+        "Imagine a vehicle approaching a narrow gap. Its recorded drive shows what happened when it waited. It does not show what nearby vehicles would have done if it had advanced. This is the gap between replay and counterfactual testing: an alternative action needs an alternative stream of observations, not simply a different label on the same video.",
+        "Waymo’s February 2026 World Model announcement addresses that problem with generative simulation. The most consequential promise is not a striking artificial scene. It is the ability to examine decisions that were never taken on the original drive. That promise also raises the standard of validation: an attractive picture is not enough if the consequences of an action are wrong.",
+        "Waymo describes adapting Google DeepMind’s Genie 3 and generating both camera and lidar outputs. Engineers can control driving actions, scene layouts, and language-described conditions. The release demonstrates changed weather, unusual obstacles, and routes that diverge from a recorded trajectory. It also shows conversion of ordinary camera footage into multimodal simulations and an efficient variant for longer rollouts.",
+        "The useful abstraction is a loop: the driving policy acts, the simulated world changes, new sensor observations reach the policy, and the policy acts again. Our conceptual diagram separates that loop from the evaluation layer. A simulator supplies possible experience; a critic must still decide whether the behavior was acceptable. Neither job disappears because the images look convincing.",
+        "Waymo’s earlier technical overview describes an ecosystem with three roles: Driver, Simulator, and Critic. The Driver proposes behavior; simulation creates challenging experience; the Critic evaluates performance. The company also discusses structured representations alongside learned embeddings, with explicit validation and feedback as part of the architecture. That is useful context for the World Model release, not an independent validation of this particular simulator.",
+        "Our reading is that generative simulation is best understood as a way to expand the questions a testing system can ask. It does not automatically improve the answers to those questions. Scenario creation, outcome judgment, and evidence that transfers to real roads remain distinct responsibilities. A strong workflow should make it possible to audit each one without relying on the polish of the demonstration.",
+        "The announcement primarily provides demonstrations and a technical description. It does not establish a public estimate of crash reduction attributable to the World Model. We would therefore read it as evidence of controllable scenario generation, not as a standalone safety result.",
+        "Genie 3’s own release discusses limitations involving multi-agent interaction, geographic accuracy, and interaction duration. Those are sensible areas to investigate in driving simulation, but they should not be mechanically assigned to Waymo’s adapted model. Post-training, sensor outputs, and operating requirements differ. The defensible conclusion is that these questions require dedicated measurements, not that one model’s published weakness proves an identical failure in another.",
+        "For a next evaluation, we would start with ordinary maneuvers that can be compared against held-out real observations. If the simulated car brakes, does the following vehicle react plausibly? If an obstacle moves, do camera appearance and lidar depth remain consistent? If a vehicle briefly leaves view, does it retain a coherent position when it returns?",
+        "Then test whether simulation preserves decision rankings. Suppose two policies choose different responses to the same hazard. A useful simulator should not systematically reward the more dangerous real-world choice. This is harder than matching the next frame because small errors can accumulate through feedback: a mistaken observation changes an action, which changes the next observation.",
+        "Finally, separate realism from coverage. A rare scene can be realistic yet irrelevant to the intended operating area; a common scene can expose a serious failure with little visual novelty. We would organize scenarios around plausible failure mechanisms and deployment conditions rather than treating unusual imagery as a proxy for testing depth.",
+        "A useful research prototype would preserve the initial scene, intervention, action sequence, random seed, and evaluation rule for every generated case. When a policy fails, rerun nearby variations and compare with an independent test source. Does the problem persist, or does it disappear when a simulator artifact is removed? This is our proposed evidence trail, not a reported feature checklist.",
+        "The takeaway is a change in emphasis: the exciting output is not an endless library of synthetic miles, but a reproducible set of decision-relevant questions. Generative world models could make rare situations easier to study. Their value grows when the resulting conclusions survive checks outside the generated world."
+      ],
+      "question": "Which simulator error would most seriously mislead an autonomous-driving evaluation?",
+      "sources": [
+        {
+          "label": "Waymo World Model technical announcement · 6 February 2026",
+          "url": "https://waymo.com/blog/2026/02/the-waymo-world-model-a-new-frontier-for-autonomous-driving-simulation/",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "Waymo World Model technical announcement · 6 February 2026"
+        },
+        {
+          "label": "Google DeepMind: Genie 3 capabilities and limitations",
+          "url": "https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "Google DeepMind: Genie 3 capabilities and limitations"
+        },
+        {
+          "label": "Waymo · Driver, Simulator, Critic technical overview, December 2025",
+          "url": "https://waymo.com/blog/2025/12/demonstrably-safe-ai-for-autonomous-driving/",
+          "verified": "2026-10-27",
+          "type": "primary",
+          "title": "Waymo · Driver, Simulator, Critic technical overview, December 2025"
+        }
+      ],
+      "sections": [
+        {
+          "heading": "A recording contains only one decision",
+          "paragraphs": [
+            "Imagine a vehicle approaching a narrow gap. Its recorded drive shows what happened when it waited. It does not show what nearby vehicles would have done if it had advanced. This is the gap between replay and counterfactual testing: an alternative action needs an alternative stream of observations, not simply a different label on the same video.",
+            "Waymo’s February 2026 World Model announcement addresses that problem with generative simulation. The most consequential promise is not a striking artificial scene. It is the ability to examine decisions that were never taken on the original drive. That promise also raises the standard of validation: an attractive picture is not enough if the consequences of an action are wrong."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "From a driving action to a new sensor view",
+          "paragraphs": [
+            "Waymo describes adapting Google DeepMind’s Genie 3 and generating both camera and lidar outputs. Engineers can control driving actions, scene layouts, and language-described conditions. The release demonstrates changed weather, unusual obstacles, and routes that diverge from a recorded trajectory. It also shows conversion of ordinary camera footage into multimodal simulations and an efficient variant for longer rollouts.",
+            "The useful abstraction is a loop: the driving policy acts, the simulated world changes, new sensor observations reach the policy, and the policy acts again. Our conceptual diagram separates that loop from the evaluation layer. A simulator supplies possible experience; a critic must still decide whether the behavior was acceptable. Neither job disappears because the images look convincing."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "Where it sits in a larger safety process",
+          "paragraphs": [
+            "Waymo’s earlier technical overview describes an ecosystem with three roles: Driver, Simulator, and Critic. The Driver proposes behavior; simulation creates challenging experience; the Critic evaluates performance. The company also discusses structured representations alongside learned embeddings, with explicit validation and feedback as part of the architecture. That is useful context for the World Model release, not an independent validation of this particular simulator.",
+            "Our reading is that generative simulation is best understood as a way to expand the questions a testing system can ask. It does not automatically improve the answers to those questions. Scenario creation, outcome judgment, and evidence that transfers to real roads remain distinct responsibilities. A strong workflow should make it possible to audit each one without relying on the polish of the demonstration."
+          ],
+          "sourceRefs": [
+            3
+          ]
+        },
+        {
+          "heading": "What the public evidence does—and does not—show",
+          "paragraphs": [
+            "The announcement primarily provides demonstrations and a technical description. It does not establish a public estimate of crash reduction attributable to the World Model. We would therefore read it as evidence of controllable scenario generation, not as a standalone safety result.",
+            "Genie 3’s own release discusses limitations involving multi-agent interaction, geographic accuracy, and interaction duration. Those are sensible areas to investigate in driving simulation, but they should not be mechanically assigned to Waymo’s adapted model. Post-training, sensor outputs, and operating requirements differ. The defensible conclusion is that these questions require dedicated measurements, not that one model’s published weakness proves an identical failure in another."
+          ],
+          "sourceRefs": [
+            1,
+            2
+          ]
+        },
+        {
+          "heading": "The key question is causal fidelity",
+          "paragraphs": [
+            "For a next evaluation, we would start with ordinary maneuvers that can be compared against held-out real observations. If the simulated car brakes, does the following vehicle react plausibly? If an obstacle moves, do camera appearance and lidar depth remain consistent? If a vehicle briefly leaves view, does it retain a coherent position when it returns?",
+            "Then test whether simulation preserves decision rankings. Suppose two policies choose different responses to the same hazard. A useful simulator should not systematically reward the more dangerous real-world choice. This is harder than matching the next frame because small errors can accumulate through feedback: a mistaken observation changes an action, which changes the next observation.",
+            "Finally, separate realism from coverage. A rare scene can be realistic yet irrelevant to the intended operating area; a common scene can expose a serious failure with little visual novelty. We would organize scenarios around plausible failure mechanisms and deployment conditions rather than treating unusual imagery as a proxy for testing depth."
+          ],
+          "sourceRefs": []
+        },
+        {
+          "heading": "A generator should make failures easier to interrogate",
+          "paragraphs": [
+            "A useful research prototype would preserve the initial scene, intervention, action sequence, random seed, and evaluation rule for every generated case. When a policy fails, rerun nearby variations and compare with an independent test source. Does the problem persist, or does it disappear when a simulator artifact is removed? This is our proposed evidence trail, not a reported feature checklist.",
+            "The takeaway is a change in emphasis: the exciting output is not an endless library of synthetic miles, but a reproducible set of decision-relevant questions. Generative world models could make rare situations easier to study. Their value grows when the resulting conclusions survive checks outside the generated world."
+          ],
+          "sourceRefs": []
+        }
+      ],
+      "takeaway": "A believable simulated scene is only the beginning; decision-relevant consequences need independent checks.",
+      "sourceStatus": "Company technical release",
+      "format": "Illustrated research report",
+      "wordCount": 732,
+      "figures": [
+        {
+          "src": "waymo-counterfactual-loop.svg",
+          "alt": "Conceptual closed loop of driving action, world model, generated camera and lidar observations, with an independent evaluation checklist beside it.",
+          "caption": "Conceptual diagram • PCPU. The sensor-generation loop summarizes the technical announcement; the separate validation checks are our proposed reading framework, not measured performance.",
+          "sourceUrl": "https://waymo.com/blog/2026/02/the-waymo-world-model-a-new-frontier-for-autonomous-driving-simulation/",
+          "kind": "conceptual",
+          "afterSection": 1
+        },
+        {
+          "src": "waymo-validation-matrix.svg",
+          "alt": "Qualitative matrix separating visual realism, sensor consistency, response to actions and real-world transfer, each paired with a proposed validation question.",
+          "caption": "Evidence-reading matrix • PCPU. Proposed validation layers, not scores. No layer alone establishes that simulated performance transfers to real-road safety.",
+          "sourceUrl": "https://waymo.com/blog/2025/12/demonstrably-safe-ai-for-autonomous-driving/",
+          "kind": "evidence-matrix",
+          "afterSection": 4
+        }
+      ],
+      "editorialNote": "PCPU analysis. Source findings and our proposed tests are identified separately. Figures are original editorial redraws, not author-provided artwork.",
+      "takeaways": [
+        "A believable simulated scene is only the beginning; decision-relevant consequences need independent checks."
+      ]
+    },
+    {
+      "id": "ai-education",
+      "category": "Learning systems",
+      "eyebrow": "Research note · Learning systems",
+      "researchLabel": "AI tutoring trial · October 2026",
+      "researchDate": "2026-10",
+      "researchDateType": "Working paper publication month",
+      "publicationStatus": "IZA discussion paper · preliminary findings",
+      "tags": [
+        "AI tutoring",
+        "Randomized trials",
+        "Learning design"
+      ],
+      "readTime": "5 min read",
+      "title": "An AI Tutor Trial Shows Why the Study Routine Matters",
+      "deck": "A new university trial makes AI tutoring harder to summarize in a headline. Its most useful result concerns how access to an assistant can change the rest of studying.",
+      "body": [
+        "Imagine two students leaving the same study session. One finishes every exercise with an assistant beside them; the other struggles, corrects a misconception, and can explain the method alone. Which session worked better? The answer depends on what we choose to measure. A tutoring product can optimize for completing today's task while an educator cares about what remains tomorrow. That distinction makes AI tutoring an unusually revealing systems problem: the output we want is not merely a response on a screen, but a change in the person using it.",
+        "Liu and colleagues' October 2026 working paper studies 2,379 undergraduates and 30 instructors. Instructors were randomized within blocks of identical or similar courses. The assistant retrieved instructor-selected materials inside the university's learning platform; most instructors retained its default direct-instruction mode. The intervention offered access rather than requiring a particular tutoring routine. About 15% of offered students used it at least once. This is preliminary evidence about introducing a tool into ordinary teaching, not a randomized comparison of heavy and light chatbot users.",
+        "The strongest grade evidence came from the same-course subgroup: access reduced final grades and recorded platform participation. Full-sample grade evidence was weaker. The precise distinction matters: the headline is not that every student who used AI learned less. The paper's Table 3 reports the subgroup and full-sample estimates separately.",
+        "Kestin and colleagues' 2025 physics experiment tested a different arrangement. Their tutor deliberately guided learners through structured problems, using scaffolding and feedback informed by teaching research. Students performed better on the immediate post-lesson assessment than peers receiving the corresponding active-learning classroom lesson, while spending less time. This establishes a result for a designed instructional experience, not for an unrestricted chat box or a complete semester of independent study.",
+        "Bastani and colleagues provide a useful third angle. Their high-school mathematics experiment compared ordinary AI assistance with a tutor using learning safeguards. Assistance improved practice performance, but students in the less-constrained condition performed worse when the tool was removed. The safeguarded tutor largely avoided that penalty; it did not demonstrate a corresponding improvement over control on the unassisted exam. Assisted success and independent understanding were visibly different outcomes.",
+        "The university trial used course grades, not an independently administered learning test. Platform logs omit offline work, and low uptake complicates explanations of how the effect occurred. The authors do not establish a clean causal effect of individual assistant use.",
+        "Our interpretation is that these studies should not be arranged on a single 'AI works' versus 'AI fails' scoreboard. They change different things, observe different learners, and measure different endpoints. Even perfect randomization within each study would not erase those differences. Nor does a favorable immediate test answer the retention question. A useful comparison starts with the instructional activity, the availability of alternatives, and the moment at which help disappears.",
+        "For a student-built tutor, we would make the handoff back to independent work the central interaction. After a hint, the learner should have a meaningful next move: predict an output, explain a choice, repair an error, or attempt a related problem. A generic 'Does that make sense?' button tells us little. The product should record whether the learner actually made that next move, while collecting no more personal data than the evaluation requires.",
+        "We would also separate three engineering targets. Retrieval quality asks whether the system uses appropriate course material. Instructional quality asks whether its response creates a useful learning opportunity. Learning evaluation asks whether that opportunity changes later unaided performance. Passing the first test cannot substitute for the other two. A careful pilot could compare hint-first and answer-first interfaces on matched exercises, then assess a new problem after assistance ends. Predefining the primary outcome would prevent us from celebrating whichever metric happens to improve.",
+        "The practical lesson is neither to ban assistance nor to treat availability as an educational achievement. Specify the activity the tutor should strengthen, then check whether students still do the thinking that activity requires. A successful design should leave a learner better equipped to continue without it. Our next question would be: after the assistant closes, what can the student explain or solve that they could not before?"
+      ],
+      "question": "What behavior would you measure to distinguish productive help from replacing the effort of learning?",
+      "sources": [
+        {
+          "label": "Liu et al. — randomized university trial; preliminary IZA working paper, October 2026",
+          "title": "Liu et al. — randomized university trial; preliminary IZA working paper, October 2026",
+          "url": "https://docs.iza.org/dp18989.pdf"
+        },
+        {
+          "label": "Kestin et al. — structured AI tutoring versus active learning; Scientific Reports, 2025",
+          "title": "Kestin et al. — structured AI tutoring versus active learning; Scientific Reports, 2025",
+          "url": "https://www.nature.com/articles/s41598-025-97652-6"
+        },
+        {
+          "label": "Bastani et al. — assisted practice versus unaided learning; PNAS, 2025",
+          "title": "Bastani et al. — assisted practice versus unaided learning; PNAS, 2025",
+          "url": "https://doi.org/10.1073/pnas.2422633122"
+        }
+      ],
+      "sections": [
+        {
+          "heading": "The problem: a good answer is not the same as learning",
+          "paragraphs": [
+            "Imagine two students leaving the same study session. One finishes every exercise with an assistant beside them; the other struggles, corrects a misconception, and can explain the method alone. Which session worked better? The answer depends on what we choose to measure. A tutoring product can optimize for completing today's task while an educator cares about what remains tomorrow. That distinction makes AI tutoring an unusually revealing systems problem: the output we want is not merely a response on a screen, but a change in the person using it."
+          ],
+          "sourceRefs": []
+        },
+        {
+          "heading": "Study design: introducing access into an existing course",
+          "paragraphs": [
+            "Liu and colleagues' October 2026 working paper studies 2,379 undergraduates and 30 instructors. Instructors were randomized within blocks of identical or similar courses. The assistant retrieved instructor-selected materials inside the university's learning platform; most instructors retained its default direct-instruction mode. The intervention offered access rather than requiring a particular tutoring routine. About 15% of offered students used it at least once. This is preliminary evidence about introducing a tool into ordinary teaching, not a randomized comparison of heavy and light chatbot users."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "The evidence: three interventions, not one universal verdict",
+          "paragraphs": [
+            "The strongest grade evidence came from the same-course subgroup: access reduced final grades and recorded platform participation. Full-sample grade evidence was weaker. The precise distinction matters: the headline is not that every student who used AI learned less. The paper's Table 3 reports the subgroup and full-sample estimates separately.",
+            "Kestin and colleagues' 2025 physics experiment tested a different arrangement. Their tutor deliberately guided learners through structured problems, using scaffolding and feedback informed by teaching research. Students performed better on the immediate post-lesson assessment than peers receiving the corresponding active-learning classroom lesson, while spending less time. This establishes a result for a designed instructional experience, not for an unrestricted chat box or a complete semester of independent study.",
+            "Bastani and colleagues provide a useful third angle. Their high-school mathematics experiment compared ordinary AI assistance with a tutor using learning safeguards. Assistance improved practice performance, but students in the less-constrained condition performed worse when the tool was removed. The safeguarded tutor largely avoided that penalty; it did not demonstrate a corresponding improvement over control on the unassisted exam. Assisted success and independent understanding were visibly different outcomes."
+          ],
+          "sourceRefs": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "heading": "Limitations: the missing parts of the study routine",
+          "paragraphs": [
+            "The university trial used course grades, not an independently administered learning test. Platform logs omit offline work, and low uptake complicates explanations of how the effect occurred. The authors do not establish a clean causal effect of individual assistant use.",
+            "Our interpretation is that these studies should not be arranged on a single 'AI works' versus 'AI fails' scoreboard. They change different things, observe different learners, and measure different endpoints. Even perfect randomization within each study would not erase those differences. Nor does a favorable immediate test answer the retention question. A useful comparison starts with the instructional activity, the availability of alternatives, and the moment at which help disappears."
+          ],
+          "sourceRefs": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "heading": "Our analysis: design the handoff back to the learner",
+          "paragraphs": [
+            "For a student-built tutor, we would make the handoff back to independent work the central interaction. After a hint, the learner should have a meaningful next move: predict an output, explain a choice, repair an error, or attempt a related problem. A generic 'Does that make sense?' button tells us little. The product should record whether the learner actually made that next move, while collecting no more personal data than the evaluation requires.",
+            "We would also separate three engineering targets. Retrieval quality asks whether the system uses appropriate course material. Instructional quality asks whether its response creates a useful learning opportunity. Learning evaluation asks whether that opportunity changes later unaided performance. Passing the first test cannot substitute for the other two. A careful pilot could compare hint-first and answer-first interfaces on matched exercises, then assess a new problem after assistance ends. Predefining the primary outcome would prevent us from celebrating whichever metric happens to improve."
+          ],
+          "sourceRefs": []
+        },
+        {
+          "heading": "Takeaway: evaluate the routine, not just the tutor",
+          "paragraphs": [
+            "The practical lesson is neither to ban assistance nor to treat availability as an educational achievement. Specify the activity the tutor should strengthen, then check whether students still do the thinking that activity requires. A successful design should leave a learner better equipped to continue without it. Our next question would be: after the assistant closes, what can the student explain or solve that they could not before?"
+          ],
+          "sourceRefs": []
+        }
+      ],
+      "takeaways": [
+        "Access is an intervention; actual use is not randomly assigned.",
+        "Immediate performance and later independent learning need separate tests.",
+        "Design the next learner action, not only the assistant response."
+      ],
+      "figures": [
+        {
+          "src": "ai-education-learning-loop.svg",
+          "alt": "Conceptual learning loop: attempt, receive a hint, revise, and solve unaided, with a shortcut path bypassing learner work.",
+          "caption": "PCPU conceptual diagram. The productive loop and shortcut are design hypotheses, not measured pathways or effect sizes.",
+          "sourceUrl": "https://doi.org/10.1073/pnas.2422633122",
+          "kind": "conceptual-diagram",
+          "afterSection": 1
+        },
+        {
+          "src": "ai-education-evidence-map.svg",
+          "alt": "A comparison matrix separates course access, structured lessons, and assisted practice from the outcomes each can establish.",
+          "caption": "PCPU evidence map. Qualitative study-design comparison, not a pooled effect estimate. Sources: Liu et al., Kestin et al., and Bastani et al.",
+          "sourceUrl": "https://docs.iza.org/dp18989.pdf",
+          "kind": "evidence-matrix",
+          "afterSection": 3
+        }
+      ],
+      "wordCount": 690,
+      "reportFormat": "Illustrated mini-analysis",
+      "updatedDate": "2026-10-27",
+      "editorialNote": "Evidence summaries are attributed to the original sources. Sections marked Our analysis and proposed tests are PCPU editorial interpretation."
+    },
+    {
+      "id": "ai-healthcare",
+      "category": "Real-time agents",
+      "eyebrow": "Research note · Real-time agents",
+      "researchLabel": "AMIE (Video) · August 2026",
+      "researchDate": "2026-08-10",
+      "researchDateType": "First preprint submitted",
+      "publicationStatus": "Research preprint · simulated consultations",
+      "tags": [
+        "Multimodal agents",
+        "Clinical evaluation",
+        "Real-time systems"
+      ],
+      "readTime": "5 min read",
+      "title": "AMIE’s Video Study Tests More Than Medical Answers",
+      "deck": "AMIE’s video-consultation study makes a systems problem visible: conversation cannot stop whenever reasoning gets difficult. The architecture is interesting, but its simulated clinical evaluation sets clear limits on the claim.",
+      "body": [
+        "A spoken assistant has to do two jobs that can pull in opposite directions. It should respond naturally enough that a person can keep talking, yet it should not speak before it has understood an important observation. Add live video and the difficulty grows: a gesture can change the meaning of a sentence while the system is already planning its reply. AMIE's video study is interesting because it treats this as a coordination problem, not simply a larger question-answering benchmark. The research question is how perception, deliberation, and dialogue can work together without hiding each other's uncertainty.",
+        "Google's architecture divides work among a Talker, a Planner, and a Perception agent. The Talker handles low-latency speech. The Planner updates reasoning and information needs in the background. The Perception agent examines incoming audio and video for relevant observations. Their asynchronous operation lets the conversation continue while other computation proceeds. This is not equivalent to eliminating turn boundaries: the paper still describes a turn-based interaction loop.",
+        "A useful way to read the design is as a division of time budgets. Conversational responsiveness needs short deadlines; careful interpretation may need longer ones. Separating them makes those deadlines easier to manage, but creates a synchronization question. Which version of the planner's state did the talker use? Was the latest observation available before a question was asked? Those are our systems-level questions, not performance guarantees supplied by the architecture.",
+        "The randomized study compared AMIE Video, AMIE Text, and physicians consulting over video across 100 scenarios and 300 consultations. Professional patient actors enacted the cases. Independent clinical evaluators rated consultation quality; actors assessed their experience. Ten physicians conducted consultations, with twenty additional physicians evaluating them. Clinical evaluators rated video AMIE competitively across core competencies, including observation and guided examination. Actor preferences varied by communication dimension, rather than establishing a universal interpersonal advantage.",
+        "This is stronger evidence for interactive capability than a collection of written medical questions: the system must decide what information to request during an exchange. However, that distinction is an interpretation of the test format, not a claim about patient benefit. A standardized rehearsal can reveal useful capabilities while leaving the consequences of deploying them unresolved. The evidence concerns performance within these simulated encounters.",
+        "The preprint explicitly says the system is not ready for clinical deployment. Its actor-based cases omit presentations that cannot be convincingly enacted. The authors also identify difficulties with fine anatomical detail, subtle affect, and rapid movement. These results do not demonstrate improved outcomes for real patients.",
+        "Our reading is that evaluation needs two boundaries, not one. The first separates a simulated encounter from care in practice. The second separates a fluent conversation from a well-coordinated internal process. A system might sound coherent while responding to stale information; it might also interrupt awkwardly while correctly revising an earlier interpretation. We should not reward smoothness so strongly that we make correction look like a defect.",
+        "For a research prototype, we would log a compact timeline linking observations, planner updates, and spoken turns. Each spoken response could be associated with the evidence available when it was generated. Evaluation could then ask whether new information changes the plan, whether contradictory observations remain unresolved, and how clearly the system communicates a revision. We would use synthetic, non-clinical exercises first—such as identifying objects in a changing scene—to test the coordination machinery without conflating it with medical competence.",
+        "There is a relevant but distinct precedent in Google's physician-oversight research. Guardrailed-AMIE gathers information and prepares material for a clinician to review, while restricting individualized advice from the patient-facing conversation. That work separates information collection from final decision-making; it is not proof that the video system already has an equivalent validated oversight workflow.",
+        "The broader design lesson, in our view, is that agent specialization should make responsibility easier to inspect. Adding agents is not itself a safety mechanism. A useful interface should help a reviewer distinguish what was directly observed, what was reported by the person, and what the model inferred. Otherwise, a neat summary can erase precisely the disagreements that deserve attention.",
+        "AMIE Video offers a concrete architecture for balancing live interaction with background reasoning. Its simulated study is a research milestone within a bounded setting, not a clinical-outcome validation. The next systems question we would pursue is simple to state and difficult to measure well: when new evidence contradicts the current conversation, does the assistant update promptly, visibly, and consistently? That question matters wherever a real-time agent must keep talking while its understanding changes."
+      ],
+      "question": "How would you test whether an assistant corrects itself quickly enough when perception and reasoning disagree?",
+      "sources": [
+        {
+          "label": "Nagda et al. — AMIE Video preprint; study design, Figure 5, and limitations, August 2026",
+          "title": "Nagda et al. — AMIE Video preprint; study design, Figure 5, and limitations, August 2026",
+          "url": "https://arxiv.org/html/2608.09861v1"
+        },
+        {
+          "label": "Google Research — AMIE Video architecture and simulated evaluation, August 2026",
+          "title": "Google Research — AMIE Video architecture and simulated evaluation, August 2026",
+          "url": "https://research.google/blog/advancing-amie-towards-expert-level-audio-visual-clinical-consultations/"
+        },
+        {
+          "label": "Google Research — physician-centered oversight for guardrailed-AMIE, August 2025",
+          "title": "Google Research — physician-centered oversight for guardrailed-AMIE, August 2025",
+          "url": "https://research.google/blog/enabling-physician-centered-oversight-for-amie/"
+        }
+      ],
+      "sections": [
+        {
+          "heading": "The problem: conversation and deliberation run at different speeds",
+          "paragraphs": [
+            "A spoken assistant has to do two jobs that can pull in opposite directions. It should respond naturally enough that a person can keep talking, yet it should not speak before it has understood an important observation. Add live video and the difficulty grows: a gesture can change the meaning of a sentence while the system is already planning its reply. AMIE's video study is interesting because it treats this as a coordination problem, not simply a larger question-answering benchmark. The research question is how perception, deliberation, and dialogue can work together without hiding each other's uncertainty."
+          ],
+          "sourceRefs": []
+        },
+        {
+          "heading": "Mechanism: three concurrent jobs, one conversation",
+          "paragraphs": [
+            "Google's architecture divides work among a Talker, a Planner, and a Perception agent. The Talker handles low-latency speech. The Planner updates reasoning and information needs in the background. The Perception agent examines incoming audio and video for relevant observations. Their asynchronous operation lets the conversation continue while other computation proceeds. This is not equivalent to eliminating turn boundaries: the paper still describes a turn-based interaction loop.",
+            "A useful way to read the design is as a division of time budgets. Conversational responsiveness needs short deadlines; careful interpretation may need longer ones. Separating them makes those deadlines easier to manage, but creates a synchronization question. Which version of the planner's state did the talker use? Was the latest observation available before a question was asked? Those are our systems-level questions, not performance guarantees supplied by the architecture."
+          ],
+          "sourceRefs": [
+            1,
+            2
+          ]
+        },
+        {
+          "heading": "Study design and actual evidence: a standardized rehearsal",
+          "paragraphs": [
+            "The randomized study compared AMIE Video, AMIE Text, and physicians consulting over video across 100 scenarios and 300 consultations. Professional patient actors enacted the cases. Independent clinical evaluators rated consultation quality; actors assessed their experience. Ten physicians conducted consultations, with twenty additional physicians evaluating them. Clinical evaluators rated video AMIE competitively across core competencies, including observation and guided examination. Actor preferences varied by communication dimension, rather than establishing a universal interpersonal advantage.",
+            "This is stronger evidence for interactive capability than a collection of written medical questions: the system must decide what information to request during an exchange. However, that distinction is an interpretation of the test format, not a claim about patient benefit. A standardized rehearsal can reveal useful capabilities while leaving the consequences of deploying them unresolved. The evidence concerns performance within these simulated encounters."
+          ],
+          "sourceRefs": [
+            1,
+            2
+          ]
+        },
+        {
+          "heading": "Limitations: polished interaction is not clinical validation",
+          "paragraphs": [
+            "The preprint explicitly says the system is not ready for clinical deployment. Its actor-based cases omit presentations that cannot be convincingly enacted. The authors also identify difficulties with fine anatomical detail, subtle affect, and rapid movement. These results do not demonstrate improved outcomes for real patients.",
+            "Our reading is that evaluation needs two boundaries, not one. The first separates a simulated encounter from care in practice. The second separates a fluent conversation from a well-coordinated internal process. A system might sound coherent while responding to stale information; it might also interrupt awkwardly while correctly revising an earlier interpretation. We should not reward smoothness so strongly that we make correction look like a defect."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "Our analysis: make disagreement observable",
+          "paragraphs": [
+            "For a research prototype, we would log a compact timeline linking observations, planner updates, and spoken turns. Each spoken response could be associated with the evidence available when it was generated. Evaluation could then ask whether new information changes the plan, whether contradictory observations remain unresolved, and how clearly the system communicates a revision. We would use synthetic, non-clinical exercises first—such as identifying objects in a changing scene—to test the coordination machinery without conflating it with medical competence.",
+            "There is a relevant but distinct precedent in Google's physician-oversight research. Guardrailed-AMIE gathers information and prepares material for a clinician to review, while restricting individualized advice from the patient-facing conversation. That work separates information collection from final decision-making; it is not proof that the video system already has an equivalent validated oversight workflow.",
+            "The broader design lesson, in our view, is that agent specialization should make responsibility easier to inspect. Adding agents is not itself a safety mechanism. A useful interface should help a reviewer distinguish what was directly observed, what was reported by the person, and what the model inferred. Otherwise, a neat summary can erase precisely the disagreements that deserve attention."
+          ],
+          "sourceRefs": [
+            3
+          ]
+        },
+        {
+          "heading": "Takeaway: test the correction, not only the response",
+          "paragraphs": [
+            "AMIE Video offers a concrete architecture for balancing live interaction with background reasoning. Its simulated study is a research milestone within a bounded setting, not a clinical-outcome validation. The next systems question we would pursue is simple to state and difficult to measure well: when new evidence contradicts the current conversation, does the assistant update promptly, visibly, and consistently? That question matters wherever a real-time agent must keep talking while its understanding changes."
+          ],
+          "sourceRefs": []
+        }
+      ],
+      "takeaways": [
+        "The video study evaluates simulated consultations, not real-patient outcomes.",
+        "Parallel agents trade waiting time for a coordination problem.",
+        "Correction timing and evidence provenance deserve explicit evaluation."
+      ],
+      "figures": [
+        {
+          "src": "ai-healthcare-agent-architecture.svg",
+          "alt": "Conceptual architecture showing a live stream feeding perception, a background planner, and a talker that uses their latest state.",
+          "caption": "PCPU conceptual diagram of the reported division of labor. Arrows simplify information flow; this is not an implementation trace or a latency chart.",
+          "sourceUrl": "https://research.google/blog/advancing-amie-towards-expert-level-audio-visual-clinical-consultations/",
+          "kind": "conceptual-diagram",
+          "afterSection": 1
+        },
+        {
+          "src": "ai-healthcare-evidence-boundary.svg",
+          "alt": "Evidence matrix distinguishes actor consultations, evaluator ratings, and asynchronous design from claims about patient outcomes and safe deployment.",
+          "caption": "PCPU evidence-boundary map. The left column describes the research setting; the right identifies claims this study alone cannot establish.",
+          "sourceUrl": "https://arxiv.org/html/2608.09861v1",
+          "kind": "evidence-matrix",
+          "afterSection": 3
+        }
+      ],
+      "wordCount": 748,
+      "reportFormat": "Illustrated mini-analysis",
+      "updatedDate": "2026-10-27",
+      "editorialNote": "Evidence summaries are attributed to the original sources. Sections marked Our analysis and proposed tests are PCPU editorial interpretation."
+    },
+    {
+      "id": "multimodal-vision",
+      "category": "Visual grounding",
+      "eyebrow": "Research note · Visual grounding",
+      "researchLabel": "SAM 3 · ICLR 2026",
+      "researchDate": "2025-11-20",
+      "researchDateType": "First preprint submitted",
+      "publicationStatus": "Peer-reviewed conference paper · ICLR 2026",
+      "tags": [
+        "SAM 3",
+        "Segmentation",
+        "Visual grounding"
+      ],
+      "readTime": "5 min read",
+      "title": "SAM 3 and the Problem of Finding Every Match",
+      "deck": "SAM 3 turns a short concept prompt into masks for matching objects across images and video. Its most revealing test may be a prompt whose answer should be empty.",
+      "body": [
+        "Ask a visual tool to find red cups on a crowded desk. A striking demonstration might highlight one obvious cup. A dependable tool needs a stricter contract: include every matching instance, exclude the red stapler, and return nothing when no cup matches. In video, it should also keep the same cup's identity as objects move. These are different obligations. A system can draw excellent boundaries while missing objects, or find the right set while switching identities. SAM 3 makes this broader contract central to the interface between language and pixels.",
+        "The original SAM 3 paper defines promptable concept segmentation around short noun phrases or visual exemplars. A detector locates matching instances, while a memory-based tracker follows them through video. They share a visual encoder but serve different purposes: detection finds the category's members; tracking distinguishes individuals over time. A separate presence head helps decide whether the requested concept exists, rather than forcing localization to carry the entire recognition problem.",
+        "Training includes difficult negative phrases. The authors' ablations attribute gains to both those negatives and the presence mechanism. The paper also evaluates an optional higher-level agent that uses SAM 3 as a tool. That distinction matters: the base model's short-phrase task is not the same capability as an additional language model interpreting a complicated request.",
+        "Meta's SA-Co/Gold documentation treats an image and its noun phrase as the evaluation unit. A phrase may have several annotated objects or no matching object. Independent annotations can disagree about boundaries, instance counts, or whether the concept is present. The official evaluator compares predictions against the available annotations using a specified matching procedure. This makes annotation policy part of the result, not a detail to ignore when comparing systems.",
+        "The public repository provides inference examples, model checkpoints, and evaluation resources. Its image interface returns masks, boxes, and scores; video examples include interactive refinement. These are useful ingredients for reproduction, but a released notebook is not evidence that every downstream use will be reliable. We would inspect the evaluation configuration and save the exact model version before treating a reproduced number as comparable to the paper.",
+        "SAM 3's base formulation does not support unrestricted referring expressions or arbitrarily complex multi-attribute instructions. The original paper also notes that video inference cost increases with the number of tracked objects. Our report concerns that original SAM 3 system; the live repository now also contains SAM 3.1 updates, whose claims should not be silently substituted for the earlier results.",
+        "The dataset documentation adds a subtler limitation: 'all instances' depends on what can be separated and agreed upon. A crowded group may be annotated differently from clearly isolated objects. In our view, this is not a reason to dismiss the benchmark. It is a reason to understand the contract before building on it. An application that counts individual items may care about a distinction that a union-of-pixels evaluation does not fully capture.",
+        "For a student project, we would start with a small, deliberately awkward test collection rather than a highlight reel. Include an absent target, a visually similar distractor, several overlapping matches, a partly hidden object, and an object that leaves and re-enters the frame. Decide what the correct answer is before looking at model output. Where a phrase is genuinely ambiguous, record alternative acceptable interpretations instead of pretending there is one obvious answer.",
+        "Then score failures separately. Missed instances tell us about coverage. Incorrect inclusions tell us about selectivity. Boundary errors tell us about spatial precision. Identity switches tell us about temporal consistency. A single attractive overlay can conceal all four. The relative importance should follow the application: an editing assistant may tolerate a quick manual correction, while a counting pipeline may propagate one missed object into every later calculation.",
+        "We would also measure the cost of repair. If a user can correct a mask with an example or point, does that correction apply to the intended instance without changing unrelated objects? Does it persist across frames? Recording the first prediction and every subsequent intervention prevents an interactive success from being mistaken for autonomous performance. That is a test protocol we propose, not a result reported by SAM 3.",
+        "SAM 3 is useful to think with because it makes language-conditioned selection more explicit. The engineering opportunity is not merely to produce pleasing masks; it is to expose a selection contract that can be checked and repaired. Before asking how impressive the demo looks, ask which failure your application cannot afford—and whether your evaluation includes enough opportunities for that failure to appear. Sometimes the strongest evidence of understanding is a system that correctly selects nothing."
+      ],
+      "question": "Which failure would hurt your application most: missing a match, inventing one, or switching identities?",
+      "sources": [
+        {
+          "label": "Carion et al. — SAM 3 paper, revised March 2026; task, ablations, and limitations",
+          "title": "Carion et al. — SAM 3 paper, revised March 2026; task, ablations, and limitations",
+          "url": "https://arxiv.org/html/2511.16719v2"
+        },
+        {
+          "label": "Meta — SAM 3 code, examples, and model release resources",
+          "title": "Meta — SAM 3 code, examples, and model release resources",
+          "url": "https://github.com/facebookresearch/sam3"
+        },
+        {
+          "label": "Meta — SA-Co/Gold benchmark documentation and evaluation protocol",
+          "title": "Meta — SA-Co/Gold benchmark documentation and evaluation protocol",
+          "url": "https://github.com/facebookresearch/sam3/blob/main/scripts/eval/gold/README.md"
+        },
+        {
+          "label": "SAM 3 — ICLR 2026 conference publication",
+          "title": "SAM 3 — ICLR 2026 conference publication",
+          "url": "https://proceedings.iclr.cc/paper_files/paper/2026/hash/e0982cbc81401df3430ee1ff780dc7a2-Abstract-Conference.html"
+        }
+      ],
+      "sections": [
+        {
+          "heading": "The problem: every match includes the possibility of none",
+          "paragraphs": [
+            "Ask a visual tool to find red cups on a crowded desk. A striking demonstration might highlight one obvious cup. A dependable tool needs a stricter contract: include every matching instance, exclude the red stapler, and return nothing when no cup matches. In video, it should also keep the same cup's identity as objects move. These are different obligations. A system can draw excellent boundaries while missing objects, or find the right set while switching identities. SAM 3 makes this broader contract central to the interface between language and pixels."
+          ],
+          "sourceRefs": []
+        },
+        {
+          "heading": "Mechanism: separate concept recognition from tracking",
+          "paragraphs": [
+            "The original SAM 3 paper defines promptable concept segmentation around short noun phrases or visual exemplars. A detector locates matching instances, while a memory-based tracker follows them through video. They share a visual encoder but serve different purposes: detection finds the category's members; tracking distinguishes individuals over time. A separate presence head helps decide whether the requested concept exists, rather than forcing localization to carry the entire recognition problem.",
+            "Training includes difficult negative phrases. The authors' ablations attribute gains to both those negatives and the presence mechanism. The paper also evaluates an optional higher-level agent that uses SAM 3 as a tool. That distinction matters: the base model's short-phrase task is not the same capability as an additional language model interpreting a complicated request."
+          ],
+          "sourceRefs": [
+            1
+          ]
+        },
+        {
+          "heading": "Actual evidence: the benchmark tests an image–prompt pair",
+          "paragraphs": [
+            "Meta's SA-Co/Gold documentation treats an image and its noun phrase as the evaluation unit. A phrase may have several annotated objects or no matching object. Independent annotations can disagree about boundaries, instance counts, or whether the concept is present. The official evaluator compares predictions against the available annotations using a specified matching procedure. This makes annotation policy part of the result, not a detail to ignore when comparing systems.",
+            "The public repository provides inference examples, model checkpoints, and evaluation resources. Its image interface returns masks, boxes, and scores; video examples include interactive refinement. These are useful ingredients for reproduction, but a released notebook is not evidence that every downstream use will be reliable. We would inspect the evaluation configuration and save the exact model version before treating a reproduced number as comparable to the paper."
+          ],
+          "sourceRefs": [
+            2,
+            3
+          ]
+        },
+        {
+          "heading": "Limitations: short phrases are a deliberate boundary",
+          "paragraphs": [
+            "SAM 3's base formulation does not support unrestricted referring expressions or arbitrarily complex multi-attribute instructions. The original paper also notes that video inference cost increases with the number of tracked objects. Our report concerns that original SAM 3 system; the live repository now also contains SAM 3.1 updates, whose claims should not be silently substituted for the earlier results.",
+            "The dataset documentation adds a subtler limitation: 'all instances' depends on what can be separated and agreed upon. A crowded group may be annotated differently from clearly isolated objects. In our view, this is not a reason to dismiss the benchmark. It is a reason to understand the contract before building on it. An application that counts individual items may care about a distinction that a union-of-pixels evaluation does not fully capture."
+          ],
+          "sourceRefs": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "heading": "Our analysis: build a failure map before a showcase",
+          "paragraphs": [
+            "For a student project, we would start with a small, deliberately awkward test collection rather than a highlight reel. Include an absent target, a visually similar distractor, several overlapping matches, a partly hidden object, and an object that leaves and re-enters the frame. Decide what the correct answer is before looking at model output. Where a phrase is genuinely ambiguous, record alternative acceptable interpretations instead of pretending there is one obvious answer.",
+            "Then score failures separately. Missed instances tell us about coverage. Incorrect inclusions tell us about selectivity. Boundary errors tell us about spatial precision. Identity switches tell us about temporal consistency. A single attractive overlay can conceal all four. The relative importance should follow the application: an editing assistant may tolerate a quick manual correction, while a counting pipeline may propagate one missed object into every later calculation.",
+            "We would also measure the cost of repair. If a user can correct a mask with an example or point, does that correction apply to the intended instance without changing unrelated objects? Does it persist across frames? Recording the first prediction and every subsequent intervention prevents an interactive success from being mistaken for autonomous performance. That is a test protocol we propose, not a result reported by SAM 3."
+          ],
+          "sourceRefs": []
+        },
+        {
+          "heading": "Takeaway: an empty answer can be the right answer",
+          "paragraphs": [
+            "SAM 3 is useful to think with because it makes language-conditioned selection more explicit. The engineering opportunity is not merely to produce pleasing masks; it is to expose a selection contract that can be checked and repaired. Before asking how impressive the demo looks, ask which failure your application cannot afford—and whether your evaluation includes enough opportunities for that failure to appear. Sometimes the strongest evidence of understanding is a system that correctly selects nothing."
+          ],
+          "sourceRefs": []
+        }
+      ],
+      "takeaways": [
+        "Finding every match requires testing absent concepts as well as visible ones.",
+        "Short concept phrases are not unrestricted visual reasoning.",
+        "Report first-pass errors and the human effort required to repair them."
+      ],
+      "figures": [
+        {
+          "src": "multimodal-vision-concept-pipeline.svg",
+          "alt": "Conceptual pipeline from a short red cups prompt to concept presence, instance masks, and persistent video identities, with a no-match branch.",
+          "caption": "PCPU conceptual illustration, not SAM 3 output. The cup scene is synthetic and the arrows describe task responsibilities rather than benchmark performance.",
+          "sourceUrl": "https://arxiv.org/html/2511.16719v2",
+          "kind": "conceptual-diagram",
+          "afterSection": 1
+        },
+        {
+          "src": "multimodal-vision-failure-map.svg",
+          "alt": "A qualitative test matrix maps absence, distractors, overlap, and reappearance to false positives, missed instances, boundary errors, and identity switches.",
+          "caption": "PCPU proposed evaluation matrix. These stress tests and questions are editorial recommendations, not measured results from the paper.",
+          "sourceUrl": "https://github.com/facebookresearch/sam3/blob/main/scripts/eval/gold/README.md",
+          "kind": "evidence-matrix",
+          "afterSection": 3
+        }
+      ],
+      "wordCount": 766,
+      "reportFormat": "Illustrated mini-analysis",
+      "updatedDate": "2026-10-27",
+      "editorialNote": "Evidence summaries are attributed to the original sources. Sections marked Our analysis and proposed tests are PCPU editorial interpretation."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc"><title id="title">The learning loop — and its shortcut</title><desc id="desc">Evaluate what the learner does after the assistant responds.</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#187b76" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="760" rx="28" fill="#f6f4ed"/>
+<rect x="40" y="34" width="250" height="35" rx="18" fill="#187b76"/>
+<text x="58" y="58" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="1">PCPU CONCEPTUAL</text>
+<text x="44" y="119" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" text-anchor="start" letter-spacing="0">The learning loop — and its shortcut</text>
+<text x="45" y="157" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Evaluate what the learner does after the assistant responds.</text>
+<path d="M44 188H1156" stroke="#d2ddd6"/>
+<rect x="44" y="234" width="246" height="166" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<circle cx="75" cy="269" r="17" fill="#d8eee6"/>
+<text x="75" y="276" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0">1</text>
+<text x="104" y="278" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" text-anchor="start" letter-spacing="0">Attempt</text>
+<text x="68" y="324" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Make a prediction</text>
+<text x="68" y="355" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">or try a solution</text>
+<rect x="332" y="234" width="246" height="166" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<circle cx="363" cy="269" r="17" fill="#d8eee6"/>
+<text x="363" y="276" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0">2</text>
+<text x="392" y="278" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" text-anchor="start" letter-spacing="0">Get a hint</text>
+<text x="356" y="324" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Identify a gap</text>
+<text x="356" y="355" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">without finishing</text>
+<rect x="620" y="234" width="246" height="166" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<circle cx="651" cy="269" r="17" fill="#d8eee6"/>
+<text x="651" y="276" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0">3</text>
+<text x="680" y="278" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" text-anchor="start" letter-spacing="0">Revise</text>
+<text x="644" y="324" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Explain or repair</text>
+<text x="644" y="355" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">the learner’s work</text>
+<rect x="908" y="234" width="246" height="166" rx="18" fill="#fffefa" stroke="#d2ddd6" stroke-width="2"/>
+<circle cx="939" cy="269" r="17" fill="#d8eee6"/>
+<text x="939" y="276" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="0">4</text>
+<text x="968" y="278" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" text-anchor="start" letter-spacing="0">Go unaided</text>
+<text x="932" y="324" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Solve a new task</text>
+<text x="932" y="355" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">without the tool</text>
+<path d="M296 317 L326 317" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M584 317 L614 317" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M872 317 L902 317" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<path d="M1030 407 V448 H167 V410" fill="none" stroke="#187b76" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="600" y="441" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="600" text-anchor="middle" letter-spacing="0">Repeat with a new challenge</text>
+<rect x="44" y="496" width="1110" height="168" rx="18" fill="#f5dfd5"/>
+<text x="70" y="537" fill="#915638" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="1">THE SHORTCUT TO TEST</text>
+<text x="70" y="581" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="700" text-anchor="start" letter-spacing="0">Request → completed answer → submit</text>
+<text x="70" y="623" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Task completion can rise without showing what the learner can now do alone.</text>
+<text x="45" y="730" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" text-anchor="start" letter-spacing="0">PCPU conceptual illustration • Not measured results</text>
+<text x="1155" y="730" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="end" letter-spacing="1">PCPU / RESEARCH NOTES</text>
+</svg>

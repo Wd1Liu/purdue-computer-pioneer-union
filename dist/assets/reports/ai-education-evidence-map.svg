@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc"><title id="title">Read the intervention before the headline</title><desc id="desc">Three study designs ask related, but different, questions.</desc><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0 0L8 4L0 8" fill="none" stroke="#187b76" stroke-width="1.5"/></marker></defs>
+<rect width="1200" height="800" rx="28" fill="#f6f4ed"/>
+<rect x="40" y="34" width="250" height="35" rx="18" fill="#187b76"/>
+<text x="58" y="58" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="start" letter-spacing="1">PCPU EVIDENCE MAP</text>
+<text x="44" y="119" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700" text-anchor="start" letter-spacing="0">Read the intervention before the headline</text>
+<text x="45" y="157" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Three study designs ask related, but different, questions.</text>
+<path d="M44 188H1156" stroke="#d2ddd6"/>
+<rect x="44" y="216" width="298" height="50" rx="12" fill="#17313c"/>
+<text x="62" y="249" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="0.4">STUDY / SETTING</text>
+<rect x="360" y="216" width="387" height="50" rx="12" fill="#17313c"/>
+<text x="378" y="249" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="0.4">WHAT CHANGED</text>
+<rect x="765" y="216" width="391" height="50" rx="12" fill="#17313c"/>
+<text x="783" y="249" fill="#fffefa" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="start" letter-spacing="0.4">WHAT WAS CHECKED</text>
+<rect x="44" y="282" width="1112" height="112" rx="14" fill="#fffefa"/>
+<rect x="44" y="282" width="7" height="112" rx="3" fill="#d8eee6"/>
+<text x="63" y="322" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" text-anchor="start" letter-spacing="0">Liu et al. / 2026</text>
+<text x="63" y="358" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="400" text-anchor="start" letter-spacing="0">University course</text>
+<text x="379" y="324" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Assistant access</text>
+<text x="379" y="355" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">inside course platform</text>
+<text x="784" y="324" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Course grades</text>
+<text x="784" y="355" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">and platform activity</text>
+<rect x="44" y="408" width="1112" height="112" rx="14" fill="#fffefa"/>
+<rect x="44" y="408" width="7" height="112" rx="3" fill="#dde9f2"/>
+<text x="63" y="448" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" text-anchor="start" letter-spacing="0">Kestin et al. / 2025</text>
+<text x="63" y="484" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="400" text-anchor="start" letter-spacing="0">Physics lesson</text>
+<text x="379" y="450" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Structured tutoring</text>
+<text x="379" y="481" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">versus classroom lesson</text>
+<text x="784" y="450" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Immediate</text>
+<text x="784" y="481" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">post-lesson performance</text>
+<rect x="44" y="534" width="1112" height="112" rx="14" fill="#fffefa"/>
+<rect x="44" y="534" width="7" height="112" rx="3" fill="#f5dfd5"/>
+<text x="63" y="574" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" text-anchor="start" letter-spacing="0">Bastani et al. / 2025</text>
+<text x="63" y="610" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="400" text-anchor="start" letter-spacing="0">Mathematics practice</text>
+<text x="379" y="576" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">AI assistance with</text>
+<text x="379" y="607" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">different safeguards</text>
+<text x="784" y="576" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">Practice with AI</text>
+<text x="784" y="607" fill="#17313c" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="400" text-anchor="start" letter-spacing="0">then exam without AI</text>
+<rect x="44" y="677" width="1112" height="51" rx="12" fill="#d8eee6"/>
+<text x="65" y="710" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="600" text-anchor="start" letter-spacing="0">Not a pooled comparison: different interventions, learners, and outcome windows.</text>
+<text x="45" y="770" fill="#5c7078" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="400" text-anchor="start" letter-spacing="0">PCPU qualitative synthesis • No common effect-size scale</text>
+<text x="1155" y="770" fill="#187b76" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" text-anchor="end" letter-spacing="1">PCPU / RESEARCH NOTES</text>
+</svg>
